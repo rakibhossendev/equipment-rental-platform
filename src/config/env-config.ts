@@ -1,0 +1,5 @@
+export const env = {
+    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+    BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
+    MONGODB_DATABASE_URL: process.env.MONGODB_DATABASE_URL,
+}

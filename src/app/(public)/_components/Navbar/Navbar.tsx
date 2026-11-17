@@ -27,8 +27,8 @@ const navItems = [
 ];
 
 const authItems = [
-  { label: "Login", href: "/login", icon: LogIn },
-  { label: "Register", href: "/register", icon: UserPlus },
+  { label: "Login", href: "/sign-in", icon: LogIn },
+  { label: "Register", href: "/sign-up", icon: UserPlus },
 ];
 
 export default function Navbar() {
@@ -60,7 +60,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full px-3 pt-3 sm:px-6 sm:pt-4">
+     <header className="sticky top-0 z-50 w-full px-3 pt-3 sm:px-6 sm:pt-4">
         <nav className="glass-nav container-page mx-auto flex min-h-16 items-center justify-between rounded-2xl px-4 sm:px-6">
 
           {/* Logo */}
@@ -119,7 +119,7 @@ export default function Navbar() {
             </Link>
 
             <Link
-              href="/register"
+              href="/sign-up"
               className="group flex items-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-all duration-200 hover:brightness-95 active:scale-[0.97]"
             >
               Register
