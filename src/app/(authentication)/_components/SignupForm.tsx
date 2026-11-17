@@ -35,18 +35,13 @@ export default function SignupForm({isPending = false,}: SignupFormProps) {
   const [ isUploading, setIsUploading ] = useState(false);
   const [ imageUrl, setImageUrl ] = useState<string | null>(null);
 
-
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[ 0 ];
 
     if (!file) return;
-
-    // Local preview
     setPreview(URL.createObjectURL(file));
-
     const formData = new FormData();
     formData.append("image", file);
-
     try {
       setIsUploading(true);
       const response = await fetch(`https://api.imgbb.com/1/upload?key=${env.NEXT_PUBLIC_IMAGEBB_API_KEY}`, {
