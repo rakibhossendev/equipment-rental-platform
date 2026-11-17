@@ -18,28 +18,89 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import Image from "next/image";
+import { env } from "@/config/env-config";
+import { UserDataType } from "../../../../typescript/main";
+import validatePassword from "@/lib/utils/verify-password";
+import { signUp } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface SignupFormProps {
   isPending?: boolean;
 }
 
-export default function SignupForm({
-  isPending = false,
-}: SignupFormProps) {
+export default function SignupForm({isPending = false,}: SignupFormProps) {
+  const router = useRouter();
   const [ preview, setPreview ] = useState<string | null>(null);
+  const [ isUploading, setIsUploading ] = useState(false);
+  const [ imageUrl, setImageUrl ] = useState<string | null>(null);
 
-  const handleImageChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+
+  const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[ 0 ];
 
-    if (file) {
-      setPreview(URL.createObjectURL(file));
+    if (!file) return;
+
+    // Local preview
+    setPreview(URL.createObjectURL(file));
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      setIsUploading(true);
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=${env.NEXT_PUBLIC_IMAGEBB_API_KEY}`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error?.message || "Image upload failed");
+      }
+
+      // Save uploaded image URL in state
+      setImageUrl(data.data.url);
+    } catch (error) {
+      setImageUrl(null);
+    } finally {
+      setIsUploading(false);
     }
   };
 
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (isUploading) return;
+
+    const formData = new FormData(event.currentTarget);
+
+    // Remove the actual File object
+    formData.delete("profileImage");
+    const getUserData = {...Object.fromEntries(formData.entries()),profileImageUrl: imageUrl,} as UserDataType;
+    const isValidPassword = validatePassword(getUserData.password, getUserData.confirmPassword);
+    
+    if(isValidPassword){
+      const {error} = await signUp.email({
+        name: getUserData.name,
+        email: getUserData.email,
+        password: getUserData.password,
+        image: getUserData.profileImageUrl,
+        callbackURL: "/dashboard"
+      })
+
+      if(error){
+        toast.error(error.message);
+        return
+      }
+      toast.success("Account created successfully!");
+      router.push("/dashboard")
+    }
+  }
+
   return (
-    <form className="space-y-5">
+    <form className="space-y-5" onSubmit={handleSubmit}>
       {/* Profile Image */}
       <div className="flex flex-col items-center gap-3">
         <div className="relative">

@@ -112,7 +112,7 @@ export default function Navbar() {
           {/* Desktop Authentication */}
           <div className="hidden shrink-0 items-center gap-2 sm:flex">
             <Link
-              href="/login"
+              href="/sign-in"
               className="rounded-xl px-4 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-secondary/80"
             >
               Login
