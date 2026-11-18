@@ -69,10 +69,6 @@ export default function DashboardSidebar() {
   const role = (session?.user as { role?: string } | undefined)?.role;
   const user = session?.user;
 
-  if (!session) {
-    redirect("/login");
-  }
-
   if (!role || !(role in dashboardMenuItem)) {
     redirect("/");
   }
