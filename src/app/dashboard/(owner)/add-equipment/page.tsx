@@ -24,7 +24,7 @@ import { Separator } from "@/components/ui/separator";
 import { env } from "@/config/env-config";
 import { EquipmentDataType } from "../../../../../typescript/main";
 import { useSession } from "@/lib/auth-client";
-import { addEquipment } from "@/lib/action/add-equipment/add-equipment";
+import { addEquipment } from "@/lib/action/equipment/add-equipment";
 import { toast } from "sonner";
 
 const categories = ["Construction", "Electronics", "Photography", "Vehicles", "Agriculture", "Event", "Tools", "Other"];
