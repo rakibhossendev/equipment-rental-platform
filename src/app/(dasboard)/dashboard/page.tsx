@@ -25,8 +25,9 @@ import {
     Clock3,
     TrendingUp,
 } from "lucide-react";
-import DashboardSidebar from "../_components/Dashboard/dashboard-sidebar";
+
 import { dashboardMenuItem } from "../data/menu-data";
+import DashboardSidebar from "../_components/Dashboard/dashboard-sidebar";
 
 const Dashboard = async () => {
     const session = await auth.api.getSession({
