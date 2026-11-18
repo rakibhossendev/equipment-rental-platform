@@ -57,6 +57,7 @@ export default function SignInForm({ isPending = false }: SignInFormProps) {
   const handleGoogleSignin = async () => {
     const data = await signIn.social({
       provider: "google",
+      callbackURL: "/dashboard"
     });
 
     if (data.error) {
