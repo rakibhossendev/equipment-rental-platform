@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -16,7 +15,15 @@ import {
   Workflow,
   LogIn,
   UserPlus,
+  LayoutDashboard,
 } from "lucide-react";
+
+import { authClient } from "@/lib/auth-client";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 
 const navItems = [
   { label: "Home", href: "/", icon: Home },
@@ -31,9 +38,21 @@ const authItems = [
   { label: "Register", href: "/sign-up", icon: UserPlus },
 ];
 
+const getInitials = (name: string) =>
+  name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0] ?? "")
+    .join("")
+    .toUpperCase() || "U";
+
 export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
 
   const closeMenu = () => setIsOpen(false);
 
@@ -44,7 +63,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeMenu();
+      if (event.key === "Escape") setIsOpen(false);
     };
 
     if (isOpen) {
@@ -60,9 +79,8 @@ export default function Navbar() {
 
   return (
     <>
-     <header className="sticky top-0 z-50 w-full px-3 pt-3 sm:px-6 sm:pt-4">
+      <header className="sticky top-0 z-50 w-full px-3 pt-3 sm:px-6 sm:pt-4">
         <nav className="glass-nav container-page mx-auto flex min-h-16 items-center justify-between rounded-2xl px-4 sm:px-6">
-
           {/* Logo */}
           <Link
             href="/"
@@ -109,25 +127,55 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Desktop Authentication */}
+          {/* Desktop Authentication / User */}
           <div className="hidden shrink-0 items-center gap-2 sm:flex">
-            <Link
-              href="/sign-in"
-              className="rounded-xl px-4 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-secondary/80"
-            >
-              Login
-            </Link>
+            {isPending ? (
+              <div className="flex items-center gap-2.5 rounded-full p-1 pr-4">
+                <div className="size-9 animate-pulse rounded-full bg-secondary" />
+                <div className="h-3.5 w-20 animate-pulse rounded-full bg-secondary" />
+              </div>
+            ) : user ? (
+              <Link
+                href="/dashboard"
+                title="Go to dashboard"
+                className="group flex items-center gap-2.5 rounded-full border border-border/70 bg-secondary/50 p-1 pr-4 transition-all duration-200 hover:border-brand/40 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Avatar className="size-9 rounded-full ring-2 ring-background">
+                  <AvatarImage
+                    src={user.image ?? undefined}
+                    alt={user.name}
+                    className="rounded-full object-cover"
+                  />
+                  <AvatarFallback className="rounded-full bg-brand/10 text-xs font-bold text-brand">
+                    {getInitials(user.name)}
+                  </AvatarFallback>
+                </Avatar>
 
-            <Link
-              href="/sign-up"
-              className="group flex items-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-all duration-200 hover:brightness-95 active:scale-[0.97]"
-            >
-              Register
-              <ArrowUpRight
-                size={16}
-                className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-              />
-            </Link>
+                <span className="max-w-[140px] truncate text-sm font-semibold text-foreground">
+                  {user.name}
+                </span>
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/sign-in"
+                  className="rounded-xl px-4 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-secondary/80"
+                >
+                  Login
+                </Link>
+
+                <Link
+                  href="/sign-up"
+                  className="group flex items-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-all duration-200 hover:brightness-95 active:scale-[0.97]"
+                >
+                  Register
+                  <ArrowUpRight
+                    size={16}
+                    className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  />
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -194,7 +242,6 @@ export default function Navbar() {
 
         {/* Drawer Content */}
         <div className="flex flex-1 flex-col gap-7 overflow-y-auto px-5 py-6">
-
           {/* Navigation Links */}
           <div className="space-y-2">
             <p className="mb-3 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
@@ -235,34 +282,73 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Account Links */}
+          {/* Account Section */}
           <div className="space-y-3 border-t border-border/60 pt-6">
             <p className="mb-3 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               Your Account
             </p>
 
-            {authItems.map((item) => {
-              const Icon = item.icon;
-              const isRegister = item.href === "/register";
+            {isPending ? (
+              <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-secondary/40 p-3">
+                <div className="size-11 animate-pulse rounded-full bg-secondary" />
+                <div className="h-4 w-28 animate-pulse rounded-full bg-secondary" />
+              </div>
+            ) : user ? (
+              <Link
+                href="/dashboard"
+                onClick={closeMenu}
+                className="group flex items-center gap-3 rounded-2xl border border-border/60 bg-secondary/40 p-3 transition-all duration-200 hover:border-brand/40 hover:bg-secondary/70"
+              >
+                <Avatar className="size-11 rounded-full ring-2 ring-background">
+                  <AvatarImage
+                    src={user.image ?? undefined}
+                    alt={user.name}
+                    className="rounded-full object-cover"
+                  />
+                  <AvatarFallback className="rounded-full bg-brand/10 text-sm font-bold text-brand">
+                    {getInitials(user.name)}
+                  </AvatarFallback>
+                </Avatar>
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={closeMenu}
-                  className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 active:scale-[0.98] ${
-                    isRegister
-                      ? "bg-brand text-brand-foreground shadow-sm hover:brightness-95"
-                      : "border border-border/70 bg-secondary/50 text-foreground hover:bg-secondary"
-                  }`}
-                >
-                  <Icon size={17} />
-                  {isRegister ? "Create an Account" : item.label}
+                <div className="grid min-w-0 flex-1 leading-tight">
+                  <span className="truncate text-sm font-semibold text-foreground">
+                    {user.name}
+                  </span>
+                  <span className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                    <LayoutDashboard size={12} />
+                    Go to dashboard
+                  </span>
+                </div>
 
-                  {isRegister && <ArrowUpRight size={16} />}
-                </Link>
-              );
-            })}
+                <ArrowUpRight
+                  size={16}
+                  className="shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                />
+              </Link>
+            ) : (
+              authItems.map((item) => {
+                const Icon = item.icon;
+                const isRegister = item.href === "/sign-up";
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={closeMenu}
+                    className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 active:scale-[0.98] ${
+                      isRegister
+                        ? "bg-brand text-brand-foreground shadow-sm hover:brightness-95"
+                        : "border border-border/70 bg-secondary/50 text-foreground hover:bg-secondary"
+                    }`}
+                  >
+                    <Icon size={17} />
+                    {isRegister ? "Create an Account" : item.label}
+
+                    {isRegister && <ArrowUpRight size={16} />}
+                  </Link>
+                );
+              })
+            )}
           </div>
 
           {/* Drawer Footer */}
