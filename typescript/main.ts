@@ -34,6 +34,7 @@ export interface OwnerInfo {
 // Main Equipment interface
 export interface EquipmentDataType {
     id?: string;
+    creatorEmail: string; // Email of the user who created the equipment listing
     equipmentName: string;
     description: string;
     category: EquipmentCategory | string;
