@@ -21,15 +21,16 @@ import Image from "next/image";
 import { env } from "@/config/env-config";
 import { UserDataType } from "../../../../typescript/main";
 import validatePassword from "@/lib/utils/verify-password";
-import { signUp } from "@/lib/auth-client";
+import { signIn, signUp } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+
 
 interface SignupFormProps {
   isPending?: boolean;
 }
 
-export default function SignupForm({isPending = false,}: SignupFormProps) {
+export default function SignupForm({ isPending = false, }: SignupFormProps) {
   const router = useRouter();
   const [ preview, setPreview ] = useState<string | null>(null);
   const [ isUploading, setIsUploading ] = useState(false);
@@ -64,6 +65,18 @@ export default function SignupForm({isPending = false,}: SignupFormProps) {
     }
   };
 
+
+  const handleGoogleSignin = async () => {
+    const data = await signIn.social({
+      provider: "google",
+    });
+
+    if(data.error) {
+      toast.error(data.error.message);
+      return;
+    }
+    router.push("/dashboard");
+  };
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -73,11 +86,11 @@ export default function SignupForm({isPending = false,}: SignupFormProps) {
 
     // Remove the actual File object
     formData.delete("profileImage");
-    const getUserData = {...Object.fromEntries(formData.entries()),profileImageUrl: imageUrl,} as UserDataType;
+    const getUserData = { ...Object.fromEntries(formData.entries()), profileImageUrl: imageUrl, } as UserDataType;
     const isValidPassword = validatePassword(getUserData.password, getUserData.confirmPassword);
-    
-    if(isValidPassword){
-      const {error} = await signUp.email({
+
+    if (isValidPassword) {
+      const { error } = await signUp.email({
         name: getUserData.name,
         email: getUserData.email,
         password: getUserData.password,
@@ -85,7 +98,7 @@ export default function SignupForm({isPending = false,}: SignupFormProps) {
         callbackURL: "/dashboard"
       })
 
-      if(error){
+      if (error) {
         toast.error(error.message);
         return
       }
@@ -289,7 +302,7 @@ export default function SignupForm({isPending = false,}: SignupFormProps) {
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
         <Link
-          href="/login"
+          href="/sign-in"
           className="font-semibold text-brand underline-offset-4 hover:underline"
         >
           Sign in
@@ -306,6 +319,7 @@ export default function SignupForm({isPending = false,}: SignupFormProps) {
       <Button
         type="button"
         variant="outline"
+        onClick={handleGoogleSignin}
         className="h-12 w-full rounded-xl border-border/70 bg-background/60 font-semibold hover:bg-secondary"
       >
         <svg viewBox="0 0 48 48" className="size-5" aria-hidden="true">

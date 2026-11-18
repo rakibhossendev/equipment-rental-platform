@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { signIn } from "@/lib/auth-client";
-import { toast } from "sonner";
+import { toast } from "sonner"
 import { useRouter } from "next/navigation";
 
 interface SignInFormProps {
@@ -23,7 +23,7 @@ interface SignInFormProps {
 
 export default function SignInForm({ isPending = false }: SignInFormProps) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [ loading, setLoading ] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -35,8 +35,8 @@ export default function SignInForm({ isPending = false }: SignInFormProps) {
     try {
       setLoading(true);
       const { error } = await signIn.email({
-        email,
-        password,
+        email: email,
+        password: password,
         callbackURL: "/dashboard",
       });
 
@@ -53,6 +53,18 @@ export default function SignInForm({ isPending = false }: SignInFormProps) {
       setLoading(false);
     }
   }
+
+  const handleGoogleSignin = async () => {
+    const data = await signIn.social({
+      provider: "google",
+    });
+
+    if (data.error) {
+      toast.error(data.error.message);
+      return;
+    }
+    router.push("/dashboard");
+  };
 
   const pendingState = isPending || loading;
 
@@ -145,7 +157,7 @@ export default function SignInForm({ isPending = false }: SignInFormProps) {
       <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
         <Link
-          href="/signup"
+          href="/sign-up"
           className="font-semibold text-brand underline-offset-4 hover:underline"
         >
           Sign up
@@ -164,6 +176,7 @@ export default function SignInForm({ isPending = false }: SignInFormProps) {
       <Button
         type="button"
         variant="outline"
+        onClick={handleGoogleSignin}
         className="h-12 w-full rounded-xl border-border/70 bg-background/60 font-semibold hover:bg-secondary"
       >
         <svg viewBox="0 0 48 48" className="size-5" aria-hidden="true">

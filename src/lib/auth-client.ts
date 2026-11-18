@@ -1,8 +1,10 @@
 import { env } from "@/config/env-config";
 import { createAuthClient } from "better-auth/react";
+import { jwtClient } from "better-auth/client/plugins"
 
 export const authClient = createAuthClient({
-    baseURL: env.BETTER_AUTH_URL
+    baseURL: env.BETTER_AUTH_URL,
+    plugins: [jwtClient()]
 })
 
 export const {signIn,signOut,signUp,useSession} = authClient
