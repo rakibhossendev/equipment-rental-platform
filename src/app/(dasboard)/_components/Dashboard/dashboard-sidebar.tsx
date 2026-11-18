@@ -73,13 +73,10 @@ export default function DashboardSidebar({
 }: DashboardSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-
   const { isMobile, setOpenMobile } = useSidebar();
-
   const [isSigningOut, setIsSigningOut] = useState(false);
-
   const menuItems = dashboardMenuItem[role];
-
+  
   const closeMobile = () => {
     if (isMobile) setOpenMobile(false);
   };
@@ -133,7 +130,7 @@ export default function DashboardSidebar({
               className="h-12 rounded-xl"
               render={
                 <Link
-                  href="/dashboard"
+                  href="/"
                   onClick={closeMobile}
                   className="flex items-center gap-3"
                 />
@@ -267,6 +264,17 @@ export default function DashboardSidebar({
               >
                 <UserRound className="size-4" />
                 Edit profile
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+               <DropdownMenuItem
+                className="mx-1 cursor-pointer gap-2 rounded-lg"
+                render={
+                  <Link href="/" onClick={closeMobile} />
+                }
+              >
+                <UserRound className="size-4" />
+                Home
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />

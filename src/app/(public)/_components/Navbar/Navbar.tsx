@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import {
   Menu,
   X,
@@ -16,6 +16,7 @@ import {
   LogIn,
   UserPlus,
   LayoutDashboard,
+  ChevronDown,
 } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
@@ -24,6 +25,8 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
+import { Button } from "@base-ui/react";
+import ProfileAvatar from "./ProfileAvatar";
 
 const navItems = [
   { label: "Home", href: "/", icon: Home },
@@ -43,14 +46,14 @@ const getInitials = (name: string) =>
     .trim()
     .split(/\s+/)
     .slice(0, 2)
-    .map((part) => part[0] ?? "")
+    .map((part) => part[ 0 ] ?? "")
     .join("")
     .toUpperCase() || "U";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
-
+  const [ isOpen, setIsOpen ] = useState(false);
+  const [ isAvatar, updateAvatar ] = useState<boolean>(false);
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
@@ -75,7 +78,36 @@ export default function Navbar() {
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "";
     };
-  }, [isOpen]);
+  }, [ isOpen ]);
+
+  // Close the profile card on outside click or Escape
+  useEffect(() => {
+    if (!isAvatar) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!target?.closest("[data-avatar-root]")) updateAvatar(false);
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") updateAvatar(false);
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [ isAvatar ]);
+
+  function handleShowAvatar() {
+    updateAvatar(!isAvatar);
+    if (!user) {
+      updateAvatar(false)
+    }
+  }
 
   return (
     <>
@@ -111,11 +143,10 @@ export default function Navbar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`relative rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200 xl:px-4 ${
-                    active
+                  className={`relative rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200 xl:px-4 ${active
                       ? "bg-brand/10 text-brand"
                       : "text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
-                  }`}
+                    }`}
                 >
                   {item.label}
 
@@ -135,10 +166,13 @@ export default function Navbar() {
                 <div className="h-3.5 w-20 animate-pulse rounded-full bg-secondary" />
               </div>
             ) : user ? (
-              <Link
-                href="/dashboard"
-                title="Go to dashboard"
-                className="group flex items-center gap-2.5 rounded-full border border-border/70 bg-secondary/50 p-1 pr-4 transition-all duration-200 hover:border-brand/40 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              <Button
+                data-avatar-root
+                title="Account menu"
+                aria-haspopup="dialog"
+                aria-expanded={isAvatar}
+                onClick={handleShowAvatar}
+                className="group flex items-center gap-2.5 rounded-full border border-border/70 bg-secondary/50 p-1 pr-3 transition-all duration-200 hover:border-brand/40 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <Avatar className="size-9 rounded-full ring-2 ring-background">
                   <AvatarImage
@@ -154,7 +188,13 @@ export default function Navbar() {
                 <span className="max-w-[140px] truncate text-sm font-semibold text-foreground">
                   {user.name}
                 </span>
-              </Link>
+
+                <ChevronDown
+                  size={16}
+                  className={`shrink-0 text-muted-foreground transition-transform duration-300 ease-out group-hover:text-foreground ${isAvatar ? "rotate-180" : "rotate-0"
+                    }`}
+                />
+              </Button>
             ) : (
               <>
                 <Link
@@ -194,11 +234,10 @@ export default function Navbar() {
 
       {/* Mobile Navigation Overlay */}
       <div
-        className={`fixed inset-0 z-[60] bg-black/30 backdrop-blur-sm transition-opacity duration-300 sm:hidden ${
-          isOpen
+        className={`fixed inset-0 z-[60] bg-black/30 backdrop-blur-sm transition-opacity duration-300 sm:hidden ${isOpen
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0"
-        }`}
+          }`}
         onClick={closeMenu}
         aria-hidden="true"
       />
@@ -210,9 +249,8 @@ export default function Navbar() {
         aria-modal="true"
         aria-label="Mobile navigation"
         aria-hidden={!isOpen}
-        className={`glass-panel fixed right-0 top-0 z-[70] flex h-dvh w-[min(88vw,380px)] flex-col border-l border-border/70 shadow-2xl transition-transform duration-300 ease-out sm:hidden ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`glass-panel fixed right-0 top-0 z-[70] flex h-dvh w-[min(88vw,380px)] flex-col border-l border-border/70 shadow-2xl transition-transform duration-300 ease-out sm:hidden ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         {/* Drawer Header */}
         <div className="flex items-center justify-between border-b border-border/60 px-5 py-5">
@@ -257,11 +295,10 @@ export default function Navbar() {
                   key={item.href}
                   href={item.href}
                   onClick={closeMenu}
-                  className={`group flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-all duration-200 ${
-                    active
+                  className={`group flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-all duration-200 ${active
                       ? "bg-brand/10 text-brand"
                       : "text-foreground hover:bg-secondary/80"
-                  }`}
+                    }`}
                 >
                   <Icon
                     size={19}
@@ -335,11 +372,10 @@ export default function Navbar() {
                     key={item.href}
                     href={item.href}
                     onClick={closeMenu}
-                    className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 active:scale-[0.98] ${
-                      isRegister
+                    className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 active:scale-[0.98] ${isRegister
                         ? "bg-brand text-brand-foreground shadow-sm hover:brightness-95"
                         : "border border-border/70 bg-secondary/50 text-foreground hover:bg-secondary"
-                    }`}
+                      }`}
                   >
                     <Icon size={17} />
                     {isRegister ? "Create an Account" : item.label}
@@ -367,6 +403,27 @@ export default function Navbar() {
           </div>
         </div>
       </aside>
+
+      {/* Profile Card (desktop, right side) */}
+      {user && (
+        <div
+          data-avatar-root
+          aria-hidden={!isAvatar}
+          className={`fixed right-3 top-[5.25rem] z-[80] hidden origin-top-right transition-all duration-200 ease-out sm:right-[max(1.5rem,calc((100vw-80rem)/2))] sm:top-[5.5rem] sm:block ${isAvatar
+              ? "visible translate-y-0 scale-100 opacity-100"
+              : "pointer-events-none invisible -translate-y-2 scale-95 opacity-0"
+            }`}
+        >
+          <ProfileAvatar
+            user={{
+              name: user.name,
+              email: user.email,
+              image: user.image ?? undefined,
+            }}
+            onClose={() => updateAvatar(false)}
+          />
+        </div>
+      )}
     </>
   );
 }
