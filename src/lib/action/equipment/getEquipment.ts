@@ -1,4 +1,5 @@
 
+import { Equipment } from "@/app/(public)/_components/equipments/equipment-card";
 import { env } from "@/config/env-config";
 
 export type EquipmentFilterParams = {
@@ -13,16 +14,11 @@ export type EquipmentFilterParams = {
     limit?: number;
 };
 
-export async function getAllEquipment(params: EquipmentFilterParams = {}) {
-    const queryParams = new URLSearchParams();
-
-    Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== "") {
-            queryParams.set(key, String(value));
-        }
+export async function getAllEquipment(query = ""): Promise<{ data: Equipment[] }> {
+    console.log(query);
+    const response = await fetch(`${env.NEXT_PUBLIC_API_BASE_URL}/equipments?${query}`, {
+        cache: "no-store",
     });
-
-    const response = await fetch(`${env.NEXT_PUBLIC_API_BASE_URL}/equipments?${queryParams.toString()}`);
 
     if (!response.ok) {
         throw new Error("Failed to fetch equipment");

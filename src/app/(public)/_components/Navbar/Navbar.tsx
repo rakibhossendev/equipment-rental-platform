@@ -30,7 +30,7 @@ import ProfileAvatar from "./ProfileAvatar";
 
 const navItems = [
   { label: "Home", href: "/", icon: Home },
-  { label: "All Equipment", href: "/all-equipments", icon: Package },
+  { label: "All Equipment", href: "/equipments", icon: Package },
   { label: "About Us", href: "/about", icon: Info },
   { label: "Contact Us", href: "/contact", icon: Mail },
   { label: "How It Works", href: "/how-it-works", icon: Workflow },

@@ -4,9 +4,17 @@ import EquipmentSearchFilter from "../_components/equipments/equipment-search-fi
 import EquipmentSort from "../_components/equipments/equipment-sort";
 import EquipmentCard, { Equipment } from "../_components/equipments/equipment-card";
 
-export default async function EquipmentPage() {
-    const response = await getAllEquipment();
-
+export default async function EquipmentPage({ searchParams }: { searchParams: Promise<{ [ key: string ]: string | string[] | undefined }> }) {
+    const params = await searchParams;
+    const queryParams = new URLSearchParams();
+    Object.entries(params).forEach(([ key, value ]) => {
+        if (typeof value === "string" && value !== "") {
+            queryParams.set(key, value);
+        }
+    });
+    const response = await getAllEquipment(
+        queryParams.toString()
+    );
     const equipments: Equipment[] = response.data;
 
     return (
@@ -30,7 +38,7 @@ export default async function EquipmentPage() {
                 </div>
 
                 {/* Search and Filters */}
-                <EquipmentSearchFilter />
+                <EquipmentSearchFilter/>
 
                 {/* Sorting */}
                 <EquipmentSort />
