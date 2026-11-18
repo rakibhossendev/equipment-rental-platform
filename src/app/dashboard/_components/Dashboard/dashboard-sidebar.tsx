@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 import {
@@ -11,10 +11,11 @@ import {
   UserRound,
   LogOut,
   Loader2,
+  Home,
 } from "lucide-react";
 
 import { toast } from "sonner";
-import { authClient } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 
 import { dashboardMenuItem } from "../../data/menu-data";
 import { getDashboardIcon } from "./dashboard-icons";
@@ -49,34 +50,33 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 
-interface DashboardSidebarProps {
-  role: keyof typeof dashboardMenuItem;
-  user: {
-    name: string;
-    email: string;
-    image?: string | null;
-  };
-}
 
 const getInitials = (name: string) =>
   name
     .trim()
     .split(/\s+/)
     .slice(0, 2)
-    .map((part) => part[0] ?? "")
+    .map((part) => part[ 0 ] ?? "")
     .join("")
     .toUpperCase() || "U";
 
-export default function DashboardSidebar({
-  role,
-  user,
-}: DashboardSidebarProps) {
+export default function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session } = useSession();
   const { isMobile, setOpenMobile } = useSidebar();
-  const [isSigningOut, setIsSigningOut] = useState(false);
-  const menuItems = dashboardMenuItem[role];
-  
+  const [ isSigningOut, setIsSigningOut ] = useState(false);
+  const role = (session?.user as { role?: string } | undefined)?.role;
+  const user = session?.user;
+
+  if (!session) {
+    redirect("/login");
+  }
+
+  if (!role || !(role in dashboardMenuItem)) {
+    redirect("/");
+  }
+  const menuItems = dashboardMenuItem[role as keyof typeof dashboardMenuItem];
   const closeMobile = () => {
     if (isMobile) setOpenMobile(false);
   };
@@ -174,11 +174,10 @@ export default function DashboardSidebar({
                   <SidebarMenuButton
                     tooltip={item.title}
                     isActive={isActive}
-                    className={`h-11 rounded-xl px-3 transition-all duration-200 [&>svg]:size-[18px] ${
-                      isActive
+                    className={`h-11 rounded-xl px-3 transition-all duration-200 [&>svg]:size-[18px] ${isActive
                         ? "bg-brand text-brand-foreground font-semibold shadow-sm hover:bg-brand/90 hover:text-brand-foreground"
                         : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                    }`}
+                      }`}
                     render={<Link href={item.url} onClick={closeMobile} />}
                   >
                     <Icon className="shrink-0" />
@@ -205,15 +204,15 @@ export default function DashboardSidebar({
               }
             >
               <Avatar className="size-9 shrink-0 rounded-xl ring-1 ring-border/70">
-                <AvatarImage src={user.image ?? undefined} alt={user.name} />
+                <AvatarImage src={user?.image ?? undefined} alt={user?.name} />
                 <AvatarFallback className="rounded-xl bg-brand/10 text-xs font-bold text-brand">
-                  {getInitials(user.name)}
+                  {getInitials(user?.name as string)}
                 </AvatarFallback>
               </Avatar>
 
               <div className="grid min-w-0 flex-1 leading-tight">
                 <span className="truncate text-sm font-semibold">
-                  {user.name}
+                  {user?.name}
                 </span>
                 <span className="truncate text-xs capitalize text-muted-foreground">
                   {role}
@@ -234,20 +233,20 @@ export default function DashboardSidebar({
                   <div className="flex items-center gap-3">
                     <Avatar className="size-10 rounded-xl">
                       <AvatarImage
-                        src={user.image ?? undefined}
-                        alt={user.name}
+                        src={user?.image ?? undefined}
+                        alt={user?.name}
                       />
                       <AvatarFallback className="rounded-xl bg-brand/10 text-brand">
-                        {getInitials(user.name)}
+                        {getInitials(user?.name as string)}
                       </AvatarFallback>
                     </Avatar>
 
                     <div className="grid min-w-0 flex-1 gap-1">
                       <span className="truncate text-sm font-semibold">
-                        {user.name}
+                        {user?.name}
                       </span>
                       <span className="truncate text-xs text-muted-foreground">
-                        {user.email}
+                        {user?.email}
                       </span>
                     </div>
                   </div>
@@ -267,13 +266,13 @@ export default function DashboardSidebar({
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
-               <DropdownMenuItem
+              <DropdownMenuItem
                 className="mx-1 cursor-pointer gap-2 rounded-lg"
                 render={
                   <Link href="/" onClick={closeMobile} />
                 }
               >
-                <UserRound className="size-4" />
+                <Home className="size-4" />
                 Home
               </DropdownMenuItem>
 
