@@ -2,7 +2,8 @@ import { getAllEquipment } from "@/lib/action/equipment/getEquipment";
 import { HardHat } from "lucide-react";
 import EquipmentSearchFilter from "../_components/equipments/equipment-search-filter";
 import EquipmentSort from "../_components/equipments/equipment-sort";
-import EquipmentCard, { Equipment } from "../_components/equipments/equipment-card";
+import EquipmentCard from "../_components/equipments/equipment-card";
+import { Equipment } from "../../../../typescript/main";
 
 export default async function EquipmentPage({ searchParams }: { searchParams: Promise<{ [ key: string ]: string | string[] | undefined }> }) {
     const params = await searchParams;
