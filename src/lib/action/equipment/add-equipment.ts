@@ -1,6 +1,7 @@
 
 import { env } from "@/config/env-config";
 import { EquipmentDataType } from "../../../../typescript/main";
+import { getJWTTokenClient } from "@/lib/jwt/getTokenClient";
 
 export async function addEquipment(data: EquipmentDataType) {
     try {
@@ -10,6 +11,7 @@ export async function addEquipment(data: EquipmentDataType) {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${await getJWTTokenClient()}`
                 },
                 body: JSON.stringify(data),
             }
