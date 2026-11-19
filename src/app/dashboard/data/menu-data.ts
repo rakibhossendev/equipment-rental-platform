@@ -48,7 +48,7 @@ export const dashboardMenuItem = {
     },
     {
       title: "All Equipment",
-      url: "/dashboard/equipment",
+      url: "/dashboard/equipments",
       icon: "Package",
     },
     {

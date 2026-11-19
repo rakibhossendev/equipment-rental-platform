@@ -1,6 +1,7 @@
 
-import { Equipment } from "@/app/(public)/_components/equipments/equipment-card";
+
 import { env } from "@/config/env-config";
+import { Equipment } from "../../../../typescript/main";
 
 export type EquipmentFilterParams = {
     search?: string;
@@ -15,7 +16,7 @@ export type EquipmentFilterParams = {
 };
 
 export async function getAllEquipment(query = ""): Promise<{ data: Equipment[] }> {
-    console.log(query);
+
     const response = await fetch(`${env.NEXT_PUBLIC_API_BASE_URL}/equipments?${query}`, {
         cache: "no-store",
     });

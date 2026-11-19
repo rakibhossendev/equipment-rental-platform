@@ -10,18 +10,9 @@ import {
     XCircle,
     ImageIcon,
 } from "lucide-react";
+import { Equipment } from "../../../../../typescript/main";
 
-export type Equipment = {
-    _id: string;
-    id: string;
-    equipmentName: string;
-    equipmentImage: string[] | string;
-    category: string;
-    rentalPrice: number;
-    rentalType: "Daily" | "Weekly" | "Monthly";
-    location: string;
-    availableQuantity: number;
-};
+
 
 type EquipmentCardProps = {
     equipment: Equipment;

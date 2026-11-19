@@ -8,7 +8,7 @@ export interface UserDataType {
 
 // Union types for dropdowns and fixed states
 export type RentalType = 'Daily' | 'Weekly' | 'Monthly';
-export type EquipmentStatus = 'Pending' | 'Approved' | 'Rejected' | 'Unavailable';
+export type EquipmentStatus = "Pending" | "Approved" | "Rejected";
 export type EquipmentCondition = 'New' | 'Like New' | 'Good' | 'Fair' | 'Used';
 
 // Update these categories to match your dropdown options
@@ -72,3 +72,33 @@ export interface UsersApiResponse {
   message: string;
   data: UserType[];
 }
+
+// Equipment Types
+
+
+export type Equipment = {
+  _id: string;
+  id: string;
+  creatorEmail?: string;
+  equipmentName: string;
+  description?: string;
+  equipmentImage: string[] | string;
+  category: string;
+  rentalPrice: number;
+  rentalType: "Daily" | "Weekly" | "Monthly";
+  location: string;
+  availableQuantity: number;
+  equipmentCondition?: string;
+  brand?: string;
+  model?: string;
+  status?: EquipmentStatus;
+  createdAt?: string;
+  updatedAt?: string;
+  ownerInformation?: {
+    id?: string;
+    name?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+  };
+};
