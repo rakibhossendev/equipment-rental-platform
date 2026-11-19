@@ -79,17 +79,7 @@ const Row = ({ children }: { children: ReactNode }) => (
   <div className="grid gap-5 sm:grid-cols-2">{children}</div>
 );
 
-const Section = ({
-  icon: Icon,
-  title,
-  description,
-  children,
-}: {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  children: ReactNode;
-}) => (
+const Section = ({icon: Icon,title,description,children,}: {icon: LucideIcon;title: string;description: string;children: ReactNode;}) => (
   <Card className="glass-card border-border/70 shadow-none">
     <CardHeader>
       <div className="flex items-center gap-3">

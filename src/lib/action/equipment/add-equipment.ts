@@ -4,6 +4,7 @@ import { EquipmentDataType } from "../../../../typescript/main";
 import { getJWTTokenClient } from "@/lib/jwt/getTokenClient";
 
 export async function addEquipment(data: EquipmentDataType) {
+    const token = await getJWTTokenClient();
     try {
         const response = await fetch(
             `${env.NEXT_PUBLIC_API_BASE_URL}/add-equipment`,
@@ -11,7 +12,7 @@ export async function addEquipment(data: EquipmentDataType) {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${await getJWTTokenClient()}`
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify(data),
             }
