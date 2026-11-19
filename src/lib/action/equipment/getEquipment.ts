@@ -27,3 +27,18 @@ export async function getAllEquipment(query = ""): Promise<{ data: Equipment[] }
 
     return response.json();
 }
+
+
+export async function getAllEquipmentForAdmin(): Promise<{ data: Equipment[] }> {
+
+    const response = await fetch(`${env.NEXT_PUBLIC_API_BASE_URL}/equipments/all-equipments`, {
+        cache: "no-store",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch equipment");
+    }
+
+    return response.json();
+}
+

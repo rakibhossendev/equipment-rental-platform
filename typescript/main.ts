@@ -74,8 +74,6 @@ export interface UsersApiResponse {
 }
 
 // Equipment Types
-
-
 export type Equipment = {
   _id: string;
   id: string;

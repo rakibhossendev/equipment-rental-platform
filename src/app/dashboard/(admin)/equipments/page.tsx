@@ -7,8 +7,9 @@ import {
   Boxes,
 } from "lucide-react";
 import { Equipment } from "../../../../../typescript/main";
-import { getAllEquipment } from "@/lib/action/equipment/getEquipment";
+
 import EquipmentTable from "../../_components/equipments/EquipmentTable";
+import { getAllEquipmentForAdmin } from "@/lib/action/equipment/getEquipment";
 
 
 const statsConfig = [
@@ -44,10 +45,11 @@ const statsConfig = [
 
 export default async function AllEquipmentsPage() {
   let equipments: Equipment[] = [];
+
   let error = false;
 
   try {
-    const response = await getAllEquipment();
+    const response = await getAllEquipmentForAdmin();
     equipments = response.data;
   } catch (err) {
     console.error("Equipment fetching error:", err);
@@ -111,7 +113,7 @@ export default async function AllEquipmentsPage() {
                 </div>
 
                 <p className="mt-3 text-3xl font-bold tracking-tight text-foreground">
-                  {stats[stat.key].toLocaleString()}
+                  {stats[ stat.key ].toLocaleString()}
                 </p>
 
                 <p className="mt-1 text-xs text-muted-foreground">
