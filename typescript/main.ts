@@ -52,3 +52,23 @@ export interface EquipmentDataType {
     createdAt?: string | Date;
     updatedAt?: string | Date;
 }
+
+// User Data Type
+export type UserRole = "customer" | "admin" | "owner";
+
+export interface UserType {
+  _id: string;
+  name: string;
+  email: string;
+  emailVerified?: boolean;
+  image?: string;
+  createdAt: string;
+  updatedAt: string;
+  role: UserRole;
+}
+
+export interface UsersApiResponse {
+  success: boolean;
+  message: string;
+  data: UserType[];
+}

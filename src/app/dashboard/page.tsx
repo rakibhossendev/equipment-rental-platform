@@ -40,7 +40,7 @@ const Dashboard = async () => {
   const role = session.user.role;
 
   if (!role || !(role in dashboardMenuItem)) {
-    redirect("/");
+    redirect("/unauthorized");
   }
 
   const user = {
