@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/table";
 import type { UserType } from "../../../../../typescript/main";
 import UsersSearch from "./UserSearch";
+import { updateUserRole } from "@/lib/action/users/updateUserRole";
+import { toast } from "sonner";
 
 type UserRole = "customer" | "owner" | "admin";
 
@@ -37,7 +39,7 @@ function getInitials(name: string) {
     .split(" ")
     .filter(Boolean)
     .slice(0, 2)
-    .map((part) => part[0])
+    .map((part) => part[ 0 ])
     .join("")
     .toUpperCase();
 }
@@ -55,11 +57,11 @@ function formatDate(date: string) {
 }
 
 export default function UsersTable({ users }: UsersTableProps) {
-  const [search, setSearch] = useState("");
+  const [ search, setSearch ] = useState("");
 
-  const [roles, setRoles] = useState<Record<string, UserRole>>(() =>
+  const [ roles, setRoles ] = useState<Record<string, UserRole>>(() =>
     Object.fromEntries(
-      users.map((user) => [user._id, user.role as UserRole])
+      users.map((user) => [ user._id, user.role as UserRole ])
     )
   );
 
@@ -73,13 +75,27 @@ export default function UsersTable({ users }: UsersTableProps) {
         user.name.toLowerCase().includes(keyword) ||
         user.email.toLowerCase().includes(keyword)
     );
-  }, [users, search]);
+  }, [ users, search ]);
 
-  const handleRoleChange = (userId: string, role: UserRole) => {
-    setRoles((previous) => ({
-      ...previous,
-      [userId]: role,
-    }));
+  const handleRoleChange = async (userId: string,role: UserRole) => {
+    try {
+      const data = await updateUserRole(userId, role);
+
+      if (!data.success) {
+        toast.error(data.message);
+        return;
+      }
+
+      setRoles((previous) => ({
+        ...previous,
+        [ userId ]: role,
+      }));
+
+      toast.success(data.message);
+    } catch (error) {
+      console.error("Role update error:", error);
+      toast.error("Failed to update user role.");
+    }
   };
 
   return (
@@ -123,7 +139,7 @@ export default function UsersTable({ users }: UsersTableProps) {
             <TableBody>
               {filteredUsers.length > 0 ? (
                 filteredUsers.map((user) => {
-                  const role = roles[user._id] ?? user.role;
+                  const role = roles[ user._id ] ?? user.role;
 
                   return (
                     <TableRow key={user._id}>
