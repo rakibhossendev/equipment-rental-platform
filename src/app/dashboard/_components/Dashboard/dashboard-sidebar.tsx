@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { redirect, usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import {usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import {
   HardHat,
@@ -63,18 +63,57 @@ const getInitials = (name: string) =>
 export default function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session } = useSession();
+
+  const {
+    data: session,
+    isPending,
+  } = useSession();
+
   const { isMobile, setOpenMobile } = useSidebar();
-  const [ isSigningOut, setIsSigningOut ] = useState(false);
-  const role = (session?.user as { role?: string } | undefined)?.role;
+
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  const role = (
+    session?.user as { role?: string } | undefined
+  )?.role;
+
   const user = session?.user;
 
-  if (!role || !(role in dashboardMenuItem)) {
-    redirect("/");
+  const isValidRole =
+    !!role &&
+    Object.prototype.hasOwnProperty.call(
+      dashboardMenuItem,
+      role
+    );
+
+  // Wait for session loading before redirecting.
+  useEffect(() => {
+    if (isPending) return;
+
+    if (!session?.user) {
+      router.replace("/sign-in");
+      return;
+    }
+
+    if (!isValidRole) {
+      router.replace("/unauthorized");
+    }
+  }, [isPending, session, isValidRole, router]);
+
+  // Prevent rendering before session and role are ready.
+  if (isPending || !session?.user || !isValidRole) {
+    return null;
   }
-  const menuItems = dashboardMenuItem[role as keyof typeof dashboardMenuItem];
+
+  const menuItems =
+    dashboardMenuItem[
+      role as keyof typeof dashboardMenuItem
+    ];
+
   const closeMobile = () => {
-    if (isMobile) setOpenMobile(false);
+    if (isMobile) {
+      setOpenMobile(false);
+    }
   };
 
   const handleSignOut = async () => {

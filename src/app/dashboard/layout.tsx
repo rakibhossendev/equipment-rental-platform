@@ -1,18 +1,27 @@
-
 import type { ReactNode } from "react";
 
-import { SidebarProvider } from "@/components/ui/sidebar";
-import DashboardSidebar from "./_components/Dashboard/dashboard-sidebar";
+import {
+  SidebarProvider,
+  SidebarInset,
+} from "@/components/ui/sidebar";
 
-export default function DashboardLayout({
+import DashboardSidebar from "./_components/Dashboard/dashboard-sidebar";
+import { requireRole } from "@/lib/core/server";
+
+export default async function DashboardLayout({
   children,
 }: {
   children: ReactNode;
 }) {
+  await requireRole("admin", "owner", "customer");
+
   return (
     <SidebarProvider>
       <DashboardSidebar />
-      {children}
+
+      <SidebarInset className="min-w-0">
+        {children}
+      </SidebarInset>
     </SidebarProvider>
   );
 }

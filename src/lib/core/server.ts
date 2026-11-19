@@ -1,14 +1,22 @@
+import "server-only";
+
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+
 import { auth } from "../auth";
-import { redirect } from "next/dist/client/components/navigation";
 
+export async function requireRole(...allowedRoles: string[]) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-export async function requireRole(role: string) {
-    const getSession = await auth.api.getSession({
-        headers: await headers()
-    });
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
 
-    if(!getSession || getSession.user.role != role){
-        redirect("/unauthorized");
-    }
+  if (!allowedRoles.includes(session.user.role)) {
+    redirect("/unauthorized");
+  }
+
+  return session;
 }

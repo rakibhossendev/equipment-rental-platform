@@ -1,9 +1,12 @@
+import type { ReactNode } from "react";
 import { requireRole } from "@/lib/core/server";
 
-const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
+export default async function AdminLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   await requireRole("admin");
 
-  return <>{children}</>;
-};
-
-export default AdminLayout;
+  return children;
+}
