@@ -76,9 +76,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
   };
 
   // Update profile information
-  const handleUpdateProfile = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleUpdateProfile = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (isUploading) {
