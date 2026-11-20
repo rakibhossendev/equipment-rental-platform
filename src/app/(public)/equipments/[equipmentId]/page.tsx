@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import {
   ArrowLeft,
   MapPin,
@@ -27,12 +27,12 @@ import {
 } from "@/components/ui/card";
 
 import type { Equipment } from "../../../../../typescript/main";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { toast } from "sonner";
 
-interface EquipmentDetailsPageProps {
-  params: Promise<{
-    equipmentId: string;
-  }>;
-}
+
+interface EquipmentDetailsPageProps {params: Promise<{equipmentId: string;}>;}
 
 // Status badge colors
 function getStatusClass(status?: string) {
@@ -46,11 +46,20 @@ function getStatusClass(status?: string) {
   }
 }
 
-export default async function EquipmentDetailsPage({
-  params,
-}: EquipmentDetailsPageProps) {
+export default async function EquipmentDetailsPage({params,}: EquipmentDetailsPageProps) {
   const { equipmentId } = await params;
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
 
+  if(!session?.user){
+    redirect("/sign-up");
+  }
+  const ROLES = ["admin","customer"];
+  console.log(session.user)
+  if(ROLES.includes(session.user.role)){
+    redirect("/unauthorized");
+  }
   // Some APIs return { data: {...} }, others return the object directly
   const response: unknown = await getEquipmentDetails(equipmentId);
   const equipment = (
@@ -64,14 +73,7 @@ export default async function EquipmentDetailsPage({
   }
 
   // Images (string or string[]): keep only valid urls
-  const images = (
-    Array.isArray(equipment.equipmentImage)
-      ? equipment.equipmentImage
-      : [equipment.equipmentImage]
-  ).filter(
-    (image): image is string =>
-      typeof image === "string" && image.trim().length > 0
-  );
+  const images = (Array.isArray(equipment.equipmentImage)? equipment.equipmentImage: [equipment.equipmentImage]).filter((image): image is string =>typeof image === "string" && image.trim().length > 0);
 
   const mainImage = images[0];
   const extraImages = images.slice(1, 5);

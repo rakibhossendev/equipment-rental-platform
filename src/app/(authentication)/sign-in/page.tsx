@@ -8,6 +8,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import SignInForm from "../_components/SignInForm";
+import Navbar from "@/app/(public)/_components/Navbar/Navbar";
 
 const benefits = [
   "Access your rental dashboard anytime",
@@ -17,6 +18,8 @@ const benefits = [
 
 export default function SignInPage() {
   return (
+    <>
+    <Navbar/>
     <main className="relative min-h-screen overflow-hidden bg-background">
       {/* Ambient Background */}
       <div className="pointer-events-none absolute -left-40 -top-40 size-[450px] rounded-full bg-brand/10 blur-[120px]" />
@@ -184,5 +187,6 @@ export default function SignInPage() {
         </section>
       </div>
     </main>
+    </>
   );
 }
