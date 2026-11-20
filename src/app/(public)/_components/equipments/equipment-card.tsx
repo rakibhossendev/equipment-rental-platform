@@ -123,7 +123,7 @@ export default function EquipmentCard({
 
                 {/* Details Button */}
                 <Link
-                    href={`/equipment/${equipment._id}`}
+                    href={`/equipments/${equipment._id}`}
                     className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
                 >
                     View Details
