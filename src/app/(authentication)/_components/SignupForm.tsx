@@ -19,11 +19,11 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import Image from "next/image";
 import { env } from "@/config/env-config";
-import { UserDataType } from "../../../../typescript/main";
 import validatePassword from "@/lib/utils/verify-password";
 import { signIn, signUp } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { SignUpType, UserType } from "../../../../typescript/main";
 
 
 interface SignupFormProps {
@@ -87,7 +87,7 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
 
     // Remove the actual File object
     formData.delete("profileImage");
-    const getUserData = { ...Object.fromEntries(formData.entries()), profileImageUrl: imageUrl, } as UserDataType;
+    const getUserData = { ...Object.fromEntries(formData.entries()), profileImageUrl: imageUrl, } as SignUpType;
     const isValidPassword = validatePassword(getUserData.password, getUserData.confirmPassword);
 
     if (isValidPassword) {
