@@ -4,8 +4,10 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { auth } from "../auth";
+import { clientPromise } from "../mongodb";
 
 export async function requireRole(...allowedRoles: string[]) {
+  await clientPromise;
   const session = await auth.api.getSession({
     headers: await headers(),
   });
