@@ -58,7 +58,7 @@ export default async function EquipmentDetailsPage({ params, }: EquipmentDetails
     redirect("/sign-up");
   }
 
-  if (session.user.role !== "customer") {
+  if (session.user.role === "admin") {
     redirect("/unauthorized");
   }
   // Some APIs return { data: {...} }, others return the object directly

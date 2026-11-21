@@ -25,6 +25,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createStripePayment } from "@/lib/action/payment/stripePayment";
 import { useSession } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 interface BookingModalProps {
   equipmentId: string;
@@ -44,7 +45,6 @@ export default function BookingModal({
   trigger,
 }: BookingModalProps) {
   const { data: session } = useSession();
-
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState("1");
   const [startDate, setStartDate] = useState("");

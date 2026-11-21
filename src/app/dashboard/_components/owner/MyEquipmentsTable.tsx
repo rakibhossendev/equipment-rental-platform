@@ -250,7 +250,7 @@ export default function MyEquipmentsTable({
                                                     title="View Details"
                                                     className="size-8 text-muted-foreground hover:bg-primary/10 hover:text-primary"
                                                 >
-                                                    <Link href={`/equipments/${equipment._id}`}>
+                                                    <Link href={`/dashboard/my-equipments/${equipment._id}`}>
                                                         <Eye className="size-4" />
                                                     </Link>
                                                 </Button>
