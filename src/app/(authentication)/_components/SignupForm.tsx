@@ -78,6 +78,7 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
       return;
     }
     router.push("/dashboard");
+    router.refresh();
   };
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
