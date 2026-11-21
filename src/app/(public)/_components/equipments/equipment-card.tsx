@@ -16,12 +16,18 @@ import { Equipment } from "../../../../../typescript/main";
 
 type EquipmentCardProps = {
     equipment: Equipment;
+    /** Optional override for the View Details link.
+     *  Defaults to the equipment details page (existing behavior). */
+    detailsHref?: string;
 };
 
 export default function EquipmentCard({
     equipment,
+    detailsHref,
 }: EquipmentCardProps) {
     const isAvailable = equipment.availableQuantity > 0;
+
+    const detailsLink = detailsHref ?? `/equipments/${equipment._id}`;
 
     // Get the first available image
     const imageSrc = Array.isArray(equipment.equipmentImage)
@@ -123,7 +129,7 @@ export default function EquipmentCard({
 
                 {/* Details Button */}
                 <Link
-                    href={`/equipments/${equipment._id}`}
+                    href={detailsLink}
                     className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
                 >
                     View Details

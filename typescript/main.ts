@@ -208,3 +208,30 @@ export type FavoriteEquipment = {
   equipmentImage: string | string[];
   createdAt: string;
 };
+
+// ------------------------------------------------------------
+// Homepage (GET /home-data)
+// ------------------------------------------------------------
+
+export type HomeStats = {
+  totalEquipment: number;
+  totalOwners: number;
+  totalCustomers: number;
+  completedRentals: number;
+};
+
+export type HomeData = {
+  featuredEquipment: Equipment[];
+  recentEquipment: Equipment[];
+  categories: string[];
+  stats: HomeStats;
+};
+
+// A single customer review. Used for clearly-labelled demo
+// content today; ready for a real reviews API later.
+export type CustomerReview = {
+  name: string;
+  initials: string;
+  rating: number;
+  comment: string;
+};

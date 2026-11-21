@@ -1,8 +1,13 @@
 
+"use client";
+
 import Link from "next/link";
 import { ArrowRight, Search, ShieldCheck, Truck } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 
 const Banner = () => {
+  const reduceMotion = useReducedMotion();
+
   return (
     <section className="px-4 pt-4 sm:px-6 lg:px-8">
       <div
@@ -17,7 +22,13 @@ const Banner = () => {
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
 
         <div className="mx-auto w-full max-w-7xl px-6 py-16 sm:px-10 lg:px-16">
-          <div className="max-w-2xl">
+          <motion.div
+            className="max-w-2xl"
+            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-md">
               <span className="size-2 rounded-full bg-green-400" />
               Smart Equipment Rental Platform
@@ -66,7 +77,7 @@ const Banner = () => {
                 Easy Booking
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
