@@ -31,6 +31,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { toast } from "sonner";
 import BookingModal from "../../_components/equipments/BookingModal";
+import AddFavoriteButton from "../../_components/equipments/AddFavoriteButton";
 
 
 interface EquipmentDetailsPageProps { params: Promise<{ equipmentId: string; }>; }
@@ -325,10 +326,7 @@ export default async function EquipmentDetailsPage({ params, }: EquipmentDetails
                     </Button>
                   }
                 />
-                <Button variant="outline" className="w-full" size="lg">
-                  <Heart className="size-4" />
-                  Add to Favorites
-                </Button>
+                <AddFavoriteButton equipmentId={equipment._id}/>
               </div>
 
               <p className="text-center text-xs leading-5 text-muted-foreground">
