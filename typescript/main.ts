@@ -58,7 +58,7 @@ export interface EquipmentDataType {
   brand: string;
   model: string;
   equipmentImage: string; // Stores the URL returned from imgbb
-  rentalTermsAndConditions: string;
+  rentalTermsAndConditions?: string;
   status: EquipmentStatus; // Defaults to 'Pending' on creation
   ownerInformation: OwnerInfo;
   createdAt?: string | Date;
@@ -79,6 +79,7 @@ export type Equipment = {
   location: string;
   availableQuantity: number;
   equipmentCondition?: string;
+  rentalTermsAndConditions?: string;
   brand?: string;
   model?: string;
   status?: EquipmentStatus;

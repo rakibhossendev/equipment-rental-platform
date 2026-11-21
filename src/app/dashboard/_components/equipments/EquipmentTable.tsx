@@ -13,6 +13,7 @@ import type {
 
 import { updateEquipmentStatus } from "@/lib/action/equipment/updateEquipmentStatus";
 import DeleteEquipmentDialog from "./DeleteEquipmemtDialog";
+import EditEquipmentDialog from "./EquipmentEditDialog";
 
 const STATUS_OPTIONS: EquipmentStatus[] = [ "Pending", "Approved", "Rejected" ];
 
@@ -206,22 +207,17 @@ export default function EquipmentTable({ equipments, }: { equipments: Equipment[
 
                 {/* Icon Actions */}
                 <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    aria-label="Edit equipment"
-                    title="Edit"
-                    className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  >
-                    <Pencil className="size-4" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Delete equipment"
-                    title="Delete"
-                    className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                  >
-                    <Trash2 className="size-4" />
-                  </button>
+                  <EditEquipmentDialog
+                    equipment={equipment}
+                    onUpdated={() => router.refresh()}
+                  />
+                  <DeleteEquipmentDialog
+                    equipmentId={equipment._id}
+                    onDeleted={() => {
+                      // Refresh equipment list
+                      router.refresh();
+                    }}
+                  />
                 </div>
               </div>
             </article>
@@ -289,14 +285,10 @@ export default function EquipmentTable({ equipments, }: { equipments: Equipment[
                   {/* Icon Actions Column */}
                   <td className="px-3 py-3 pr-4 text-right">
                     <div className="inline-flex items-center justify-end gap-1">
-                      <button
-                        type="button"
-                        aria-label="Edit equipment"
-                        title="Edit"
-                        className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                      >
-                        <Pencil className="size-4" />
-                      </button>
+                      <EditEquipmentDialog
+                        equipment={equipment}
+                        onUpdated={() => router.refresh()}
+                      />
                       <DeleteEquipmentDialog
                         equipmentId={equipment._id}
                         onDeleted={() => {
