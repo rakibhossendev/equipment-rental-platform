@@ -96,21 +96,21 @@ export type Equipment = {
 // Query parameters for server-side search / filter / sorting
 // on the All Equipment page (moved from src/lib/action/equipment/getEquipment.ts)
 export type EquipmentFilterParams = {
-    search?: string;
-    category?: string;
-    rentalType?: "Daily" | "Weekly" | "Monthly";
-    minPrice?: number;
-    maxPrice?: number;
-    availability?: boolean;
-    sort?: "price-asc" | "price-desc" | "newest";
-    page?: number;
-    limit?: number;
+  search?: string;
+  category?: string;
+  rentalType?: "Daily" | "Weekly" | "Monthly";
+  minPrice?: number;
+  maxPrice?: number;
+  availability?: boolean;
+  sort?: "price-asc" | "price-desc" | "newest";
+  page?: number;
+  limit?: number;
 };
 
 // Standard `{ data: Equipment[] }` response returned by the
 // equipment list endpoints (public list, admin list, owner list)
 export interface EquipmentListResponse {
-    data: Equipment[];
+  data: Equipment[];
 }
 
 // ------------------------------------------------------------
@@ -170,20 +170,20 @@ export interface ProfileUpdateData {
 // ------------------------------------------------------------
 
 export interface CreatePaymentPayload {
-    equipmentId: string;
-    userEmail?: string;
-    startDate: string;
-    endDate: string;
-    quantity: number;
+  equipmentId: string;
+  userEmail?: string;
+  startDate: string;
+  endDate: string;
+  quantity: number;
 }
 
 export interface CreatePaymentResponse {
-    checkoutUrl: string;
-    bookingId: string;
+  checkoutUrl: string;
+  bookingId: string;
 }
 
 export interface APIResponse {
-    data: CreatePaymentResponse;
+  data: CreatePaymentResponse;
 }
 
 // Rental booking type
@@ -234,4 +234,37 @@ export type CustomerReview = {
   initials: string;
   rating: number;
   comment: string;
+};
+
+
+
+export type AdminRental = {
+  _id: string;
+  equipmentId: string;
+  equipmentName: string;
+  userEmail: string;
+
+  startDate: string;
+  endDate: string;
+  rentalDuration: number;
+  rentalType: "Daily" | "Weekly" | "Monthly";
+  quantity: number;
+  totalPay: number;
+
+  paymentStatus: "Pending" | "Paid" | "Failed";
+  bookingStatus: "Pending" | "Confirmed" | "Cancelled" | "Completed";
+
+  createdAt: string;
+
+  customerInformation: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+
+  ownerInformation: {
+    name: string;
+    email: string;
+    phone: string;
+  };
 };
