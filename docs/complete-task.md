@@ -10,7 +10,7 @@
 - ✅ Roles defined: Customer, Owner, Admin
 - ✅ JWT access token generated (`auth.api.getToken` server / `authClient.token` client) and verified on the backend with `jose` + JWKS
 - ✅ Login ↔ Register cross links
-- ✅ JWT verification middleware (`checkAuthenticateUser`) on every private API: add-equipment, users, profile, status update, role update, my-equipments, my-rentals, favorites
+- ✅ JWT verification middleware (`checkAuthenticateUser`) on every private API: add-equipment, users, profile, status update, role update, my-equipments, my-rentals, favorites, all-rentals, admin-action (update/delete)
 - ✅ Role middleware (`verifyRole`) enforced per role: status update & users list & role change → admin, add-equipment & my-equipments → owner, my-rentals & favorites → customer, profile → any logged-in role (403 otherwise)
 - ✅ Frontend private-route protection: `/dashboard` requires any logged-in user; `(admin)` → admin, `(owner)` → owner, `(customer)` → customer groups; wrong role → `/unauthorized` (403), no session → `/sign-in`
 - ✅ Email verification / forgot-password NOT implemented (as the PDF requires)
@@ -65,9 +65,12 @@
 - ✅ My Rentals API scoped to the logged-in customer (`GET /my-rentals`, JWT + customer role)
 
 **Admin dashboard**
+- ✅ All 4 PDF admin routes exist — All Users, All Equipment, All Rentals, My Profile — in the sidebar menu and gated by `requireRole("admin")` (non-admin → `/unauthorized`)
 - ✅ All Users page: table (name, email, role, registration date) + search + Change Role (Customer/Owner/Admin) with success/error toasts and instant dropdown update — backed by admin-only API
 - ✅ All Equipment page: stats (total/pending/approved/rejected) + Approve / Reject / Pending status dropdown with toasts, instant update, and persistence — backed by admin-only API
-- ✅ Admin route group gated by role (`(admin)/layout` → `/unauthorized` for non-admins)
+- ✅ Equipment **Update** (admin): Edit dialog with all equipment fields (name, description, category, location, price, rental type, quantity, condition, brand, model, image URL, terms & conditions) + client validation + toasts → `PATCH /admin-action/update/:id` (JWT + admin role, field whitelist, numeric validation) — **new**
+- ✅ Equipment **Delete** (admin): confirmation dialog with loading state + toasts → `DELETE /admin-action/delete/:id` (JWT + admin role, ID/existence checks) — **new**
+- ✅ All Rentals page (replaces the old placeholder): table with all 7 PDF fields (Customer Information, Owner Information, Equipment Name, Rental Duration, Booking Amount, Payment Status, Booking Status) + 4 summary stats (total / paid / pending / collected) + search + responsive card (mobile) & table (desktop) views + empty & error states — backed by `GET /all-rentals` (JWT + admin role) — **new**
 
 **Profile**
 - ✅ Profile page: account overview card + form (name, image, phone number, address) with imgbb image upload and toasts
@@ -80,8 +83,9 @@
 - ✅ Frontend config keys + MongoDB credentials secured via environment variables (.env not committed)
 - ✅ Design system (light/dark tokens, consistent typography, shadcn components, toasts)
 - ✅ TypeScript compiles clean (`tsc --noEmit` = 0 errors)
-- ✅ Client commits: **39/20** requirement met
-- ✅ Server commits: **15/12** requirement met
+- ✅ Production build passes (`npm run build` exit 0)
+- ✅ Client commits: **43/20** requirement met
+- ✅ Server commits: **18/12** requirement met
 
 # Incomplete Task ❌
 
@@ -90,24 +94,23 @@
 - ❌ Rental terms are hardcoded generic text instead of the equipment's own `rentalTermsAndConditions`
 - ❌ "Contact Owner" button has no handler (does nothing)
 
-**Equipment management**
+**Equipment management (owner side only — admin update/delete is done ✅)**
 - ❌ Status field: PDF requires a **Status (Pending)** field on the Add Equipment form — neither the form nor the server sets `status`, so it is stored as `undefined`
-- ❌ Equipment Update (My Equipment / admin): owner table links to `/dashboard/owner/my-equipments/[id]/edit` — route does not exist (404), no edit page, no update endpoint
-- ❌ Equipment Delete: button `onClick` is an empty comment ("Delete API will be connected here"), no delete endpoint
+- ❌ Equipment Update (owner): My Equipment table still links to `/dashboard/owner/my-equipments/[id]/edit` — route does not exist (404), no edit page (admin-side edit dialog + endpoint exist)
+- ❌ Equipment Delete (owner): button `onClick` is still an empty comment ("Delete API will be connected here") — not wired (admin-side delete dialog + endpoint exist)
 
 **Dashboards**
-- ❌ Owner: My Equipment Rental table (7 columns) — `/dashboard/my-equipment-rental` 404
-- ❌ Admin: All Rentals — route exists but is a placeholder (`<h1>All Rental Page</h1>`), no table/data
-- ❌ Dashboard statistics (all 4 overview cards hardcoded "—")
-- ❌ Dashboard charts / graphs
+- ❌ Dashboard overview statistics: all 4 overview cards still hardcoded "—" (Total Rentals, Active Bookings, Pending Requests, Rental Overview are never fetched)
+- ❌ Dashboard charts / graphs: PDF Dashboard UI requires "Charts and graphs for quick data visualization" — none exist anywhere
+- ❌ Owner: My Equipment Rental table (7 columns) — sidebar links to `/dashboard/my-equipment-rental`, route 404
 
 **Analytics (Challenge 3)**
 - ❌ Admin analytics (total users, equipment, bookings, pending approvals, completed rentals, revenue, monthly statistics)
 - ❌ Owner analytics (listed equipment, completed rentals, earnings, monthly earnings)
 
 **Pages, links & quality**
-- ❌ Loading pages (`loading.tsx`) — none exist
-- ❌ Error pages (`error.tsx`) / 404 (`not-found.tsx`) — none exist (only `/unauthorized`)
+- ❌ Loading pages (`loading.tsx`) — none exist (PDF explicitly requires loading pages)
+- ❌ Error pages (`error.tsx`) / 404 (`not-found.tsx`) — none exist (only `/unauthorized`) (PDF explicitly requires error pages)
 - ❌ Dead links: /terms, /privacy (sign-in & sign-up footers), /forgot-password (sign-in form)
 - ❌ Success page "Go to Dashboard" links to `/dashboard/customer` — that path does not exist (404; real routes are `/dashboard/my-rentals`, `/dashboard/favorites`)
 - ❌ Stripe `cancel_url` points to `/cancel` — no cancel page exists (404)
@@ -116,13 +119,7 @@
 - ❌ README (still default create-next-app template — needs project name, purpose, live URL, key features, npm packages)
 - ❌ Server GitHub push + live deployment + production CORS/404/504 verification (server CORS is wide open: `cors()`)
 - ❌ `.env.example` gaps: client missing `BETTER_AUTH_GOOGLE_CLIENT_ID/SECRET` + `NEXT_PUBLIC_API_BASE_URL`; **server has no `.env.example` at all** (needs Mongo, Stripe keys, `CLIENT_SIDE_BASE_URL`, webhook secret documented)
-- ❌ ESLint still failing: 1 error (`src/hooks/use-mobile.ts`) + 6 warnings
-
-**Optional (bonus)**
-- ❌ Pagination (All Equipment / Booking History)
-- ❌ Theme toggle (dark/light saved to localStorage — next-themes installed but no ThemeProvider/toggle)
-- ❌ Cron job for automated booking status update (node-cron)
-- ❌ Email notifications on booking completion
+- ❌ ESLint still failing: 1 error (`src/hooks/use-mobile.ts`) + 9 warnings (3 new unused-icon warnings in `EquipmentTable.tsx`)
 
 ---
 
@@ -130,10 +127,9 @@
 
 | | Count | Percent |
 |---|---|---|
-| ✅ Complete | 62 | **71%** |
-| ❌ Incomplete | 25 | **29%** |
-| **Total tracked requirements** | **87** | **100%** |
+| ✅ Complete | 66 | **77%** |
+| ❌ Incomplete | 20 | **23%** |
+| **Total tracked requirements** | **86** | **100%** |
 
-- **Core requirements** (excluding the 4 optional bonus items): **62/83 = 75% complete**, 25% incomplete
-- **Optional bonus:** 0/4 complete (0%)
-- **Notable since last update:** The entire Home page is now done — Featured Equipment (API-driven), Categories, Why Choose Us, Customer Reviews (4 demo reviews, labeled), How It Works + Platform Stats extra sections, Framer Motion animations, the site-wide Footer, and the fixed `/equipments` CTA. Dead navbar links removed (About/Contact/How It Works are PDF-optional), footer added with zero broken links, `get-home-data` URL bug fixed, commits now client 39/20 and server 15/12. **Biggest remaining gaps: equipment Update/Delete + Status field, details-page role check/hardcoded terms, owner My Equipment Rental + admin All Rentals, dashboard stats/charts (Challenge 3), loading/error/404 pages, README/deployment polish.**
+- **Admin dashboard status:** All 4 routes live (All Users ✅, All Equipment ✅ with Approve/Reject/**Update**/**Delete**, All Rentals ✅ full table, My Profile ✅), all backed by admin-only JWT APIs. Remaining admin gaps are only the shared dashboard's hardcoded stats cards, missing charts/graphs, and Challenge 3 analytics.
+- **Notable since last update:** Admin dashboard essentially complete — **All Rentals** replaced the placeholder with the full 7-field table + stats + search + responsive views; **Equipment Update/Edit dialog** and **Delete dialog** added with working `PATCH`/`DELETE /admin-action/…/:id` endpoints (JWT + admin role). Owner-side Update/Delete + Add-Equipment Status field are the only equipment-management gaps left. Commits now client **43/20**, server **18/12**; `tsc` 0, build exit 0, ESLint 1 error + 9 warnings. **Biggest remaining gaps: dashboard stats/charts (Challenge 3 analytics), owner My Equipment Rental 404, loading/error pages, README/deployment polish.**

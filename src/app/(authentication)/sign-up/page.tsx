@@ -10,6 +10,9 @@ import {
 } from "lucide-react";
 import SignupForm from "../_components/SignupForm";
 import Navbar from "@/app/(public)/_components/Navbar/Navbar";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 
 const benefits = [
@@ -18,7 +21,14 @@ const benefits = [
   "Manage your rentals in one place",
 ];
 
-export default function SignUpPage() {
+export default async function SignUpPage() {
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
+
+  if (session?.user.role) {
+    redirect("/unauthorized")
+  }
   return (
     <>
       <Navbar />

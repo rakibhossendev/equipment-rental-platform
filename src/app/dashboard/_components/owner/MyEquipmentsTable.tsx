@@ -25,6 +25,9 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import DeleteEquipmentDialog from "../equipments/DeleteEquipmemtDialog";
+import { useRouter } from "next/navigation";
+import EditMyEquipmentDialog from "./EditEquipmentModal";
 
 interface MyEquipmentsTableProps {
     equipments: Equipment[];
@@ -76,6 +79,7 @@ function EquipmentThumb({
 export default function MyEquipmentsTable({
     equipments,
 }: MyEquipmentsTableProps) {
+    const router = useRouter();
     const [ search, setSearch ] = useState("");
 
     // Search equipment by name or category
@@ -252,32 +256,19 @@ export default function MyEquipmentsTable({
                                                 </Button>
 
                                                 {/* Update */}
-                                                <Button
-
-                                                    size="icon"
-                                                    variant="ghost"
-                                                    title="Update Equipment"
-                                                    className="size-8 text-muted-foreground hover:bg-primary/10 hover:text-primary"
-                                                >
-                                                    <Link
-                                                        href={`/dashboard/owner/my-equipments/${equipment._id}/edit`}
-                                                    >
-                                                        <Pencil className="size-4" />
-                                                    </Link>
-                                                </Button>
+                                                <EditMyEquipmentDialog
+                                                    equipment={equipment}
+                                                    onUpdated={() => router.refresh()}
+                                                />
 
                                                 {/* Delete */}
-                                                <Button
-                                                    size="icon"
-                                                    variant="ghost"
-                                                    title="Delete Equipment"
-                                                    className="size-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                                                    onClick={() => {
-                                                        // Delete API will be connected here.
+                                                <DeleteEquipmentDialog
+                                                    equipmentId={equipment._id}
+                                                    onDeleted={() => {
+                                                        // Refresh equipment list
+                                                        router.refresh();
                                                     }}
-                                                >
-                                                    <Trash2 className="size-4" />
-                                                </Button>
+                                                />
                                             </div>
                                         </TableCell>
                                     </TableRow>
