@@ -169,7 +169,7 @@ const AddEquipments = () => {
       return;
     } 
     toast.success("Equipment added successfully."); 
-    router.push("/dashboard");
+    router.push("/dashboard/my-equipments");
   };
 
   return (
@@ -188,7 +188,7 @@ const AddEquipments = () => {
           </div>
         </div>
 
-        <Button variant="outline" onClick={() => router.push("/dashboard/equipments")}>
+        <Button variant="outline" onClick={() => router.push("/dashboard/my-equipments")}>
           <ArrowLeft className="mr-2 size-4" />
           Back to Equipment
         </Button>
@@ -213,6 +213,19 @@ const AddEquipments = () => {
             <Field label="Brand" name="brand" placeholder="e.g. Caterpillar" />
             <Field label="Model" name="model" placeholder="e.g. CAT 320D" />
           </Row>
+          <div className="space-y-2">
+            <Label htmlFor="status">Status</Label>
+            <Input
+              id="status"
+              name="status"
+              value="Pending"
+              readOnly
+              className="cursor-not-allowed bg-muted font-medium text-muted-foreground"
+            />
+            <p className="text-xs text-muted-foreground">
+              New equipment listings default to &quot;Pending&quot; status and require administrator approval.
+            </p>
+          </div>
           <Field
             label="Description"
             name="description"
@@ -325,7 +338,7 @@ const AddEquipments = () => {
         </Section>
 
         <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-end">
-          <Button type="button" variant="outline" onClick={() => router.push("/dashboard/equipments")}>
+          <Button type="button" variant="outline" onClick={() => router.push("/dashboard/my-equipments")}>
             Cancel
           </Button>
           <Button type="submit" disabled={uploading} className="bg-brand text-brand-foreground hover:bg-brand/90">

@@ -1,11 +1,9 @@
-
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 
 import { auth } from "@/lib/auth";
 
 import {
-  SidebarInset,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
@@ -24,9 +22,19 @@ import {
   CalendarDays,
   Clock3,
   TrendingUp,
+  Users,
+  CheckCircle2,
+  AlertCircle,
+  DollarSign,
 } from "lucide-react";
 
 import { dashboardMenuItem } from "./data/menu-data";
+import { getDashboardAnalytics } from "@/lib/action/analytics/get-analytics";
+import {
+  AreaChartComponent,
+  BarChartComponent,
+  DonutChartComponent,
+} from "@/components/charts/DashboardCharts";
 
 const Dashboard = async () => {
   const session = await auth.api.getSession({
@@ -49,35 +57,119 @@ const Dashboard = async () => {
     image: session.user.image,
   };
 
-  const stats = [
-    {
-      title: "Total Rentals",
-      value: "—",
-      description: "Your rental activities",
-      icon: Package,
-    },
-    {
-      title: "Active Bookings",
-      value: "—",
-      description: "Currently ongoing",
-      icon: CalendarDays,
-    },
-    {
-      title: "Pending Requests",
-      value: "—",
-      description: "Waiting for confirmation",
-      icon: Clock3,
-    },
-    {
-      title: "Rental Overview",
-      value: "—",
-      description: "Your overall performance",
-      icon: TrendingUp,
-    },
-  ];
+  const analytics = await getDashboardAnalytics();
+
+  let stats: {
+    title: string;
+    value: string | number;
+    description: string;
+    icon: typeof Package;
+  }[] = [];
+
+  let highlightLabel = "";
+  let highlightValue = "";
+
+  if (role === "admin") {
+    stats = [
+      {
+        title: "Total Users",
+        value: analytics ? (analytics.overview.totalUsers ?? 0) : "—",
+        description: "Registered platform accounts",
+        icon: Users,
+      },
+      {
+        title: "Total Equipment",
+        value: analytics ? (analytics.overview.totalEquipment ?? 0) : "—",
+        description: "All equipment listings",
+        icon: Package,
+      },
+      {
+        title: "Total Bookings",
+        value: analytics ? (analytics.overview.totalBookings ?? 0) : "—",
+        description: "All rental reservations",
+        icon: CalendarDays,
+      },
+      {
+        title: "Pending Approvals",
+        value: analytics ? (analytics.overview.pendingApprovals ?? 0) : "—",
+        description: "Equipment awaiting review",
+        icon: Clock3,
+      },
+    ];
+
+    if (analytics) {
+      highlightLabel = "Total Platform Revenue";
+      highlightValue = `৳${(analytics.overview.totalRevenue ?? 0).toLocaleString()}`;
+    }
+  } else if (role === "owner") {
+    stats = [
+      {
+        title: "Total Equipment",
+        value: analytics ? (analytics.overview.totalEquipment ?? 0) : "—",
+        description: "Your equipment listings",
+        icon: Package,
+      },
+      {
+        title: "Approved Equipment",
+        value: analytics ? (analytics.overview.approvedEquipment ?? 0) : "—",
+        description: "Live and ready for rent",
+        icon: CheckCircle2,
+      },
+      {
+        title: "Pending Equipment",
+        value: analytics ? (analytics.overview.pendingEquipment ?? 0) : "—",
+        description: "Awaiting admin review",
+        icon: Clock3,
+      },
+      {
+        title: "Rentals Received",
+        value: analytics ? (analytics.overview.totalRentalsReceived ?? 0) : "—",
+        description: "Customer bookings for your items",
+        icon: TrendingUp,
+      },
+    ];
+
+    if (analytics) {
+      highlightLabel = "Total Confirmed Earnings";
+      highlightValue = `৳${(analytics.overview.totalEarnings ?? 0).toLocaleString()}`;
+    }
+  } else {
+    // Customer
+    stats = [
+      {
+        title: "Total Rentals",
+        value: analytics ? (analytics.overview.totalRentals ?? 0) : "—",
+        description: "Your rental activities",
+        icon: Package,
+      },
+      {
+        title: "Active Bookings",
+        value: analytics ? (analytics.overview.activeBookings ?? 0) : "—",
+        description: "Currently ongoing rentals",
+        icon: CalendarDays,
+      },
+      {
+        title: "Pending Requests",
+        value: analytics ? (analytics.overview.pendingBookings ?? 0) : "—",
+        description: "Waiting for confirmation",
+        icon: Clock3,
+      },
+      {
+        title: "Completed Rentals",
+        value: analytics ? (analytics.overview.completedRentals ?? 0) : "—",
+        description: "Successfully returned",
+        icon: CheckCircle2,
+      },
+    ];
+
+    if (analytics) {
+      highlightLabel = "Total Amount Paid";
+      highlightValue = `৳${(analytics.overview.totalPaid ?? 0).toLocaleString()}`;
+    }
+  }
 
   return (
-    <SidebarInset className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       {/* Topbar */}
       <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-xl md:px-6">
         <SidebarTrigger />
@@ -123,11 +215,36 @@ const Dashboard = async () => {
               </p>
             </div>
 
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-brand/10 text-brand">
-              <TrendingUp className="size-7" />
-            </div>
+            {highlightLabel && highlightValue ? (
+              <div className="flex items-center gap-4 rounded-xl border border-brand/20 bg-brand/5 p-4">
+                <div className="flex size-12 items-center justify-center rounded-xl bg-brand/10 text-brand">
+                  <DollarSign className="size-6" />
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    {highlightLabel}
+                  </p>
+                  <p className="text-xl font-bold text-foreground">
+                    {highlightValue}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-brand/10 text-brand">
+                <TrendingUp className="size-7" />
+              </div>
+            )}
           </div>
         </section>
+
+        {!analytics && (
+          <div className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-400">
+            <AlertCircle className="size-5 shrink-0" />
+            <p className="text-sm">
+              Live statistics are currently synchronizing. Showing cached values where available.
+            </p>
+          </div>
+        )}
 
         {/* Statistics */}
         <section className="space-y-4">
@@ -162,7 +279,7 @@ const Dashboard = async () => {
 
                   <CardContent>
                     <div className="text-2xl font-bold tracking-tight text-foreground">
-                      {stat.value}
+                      {typeof stat.value === "number" ? stat.value.toLocaleString() : stat.value}
                     </div>
 
                     <p className="mt-1 text-xs text-muted-foreground">
@@ -175,7 +292,114 @@ const Dashboard = async () => {
           </div>
         </section>
 
-        {/* Recent activity */}
+        {/* Challenge 3: Admin Visualizations */}
+        {role === "admin" && analytics?.charts && (
+          <section className="space-y-4">
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">
+                Platform Analytics &amp; Visualizations
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Revenue trends, monthly booking volume, and equipment distribution across the platform.
+              </p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <AreaChartComponent
+                title="Monthly Revenue"
+                description="Total platform revenue from paid bookings (last 6 months)"
+                data={(analytics.charts.monthlyRevenue || []).map((m) => ({
+                  label: m.month,
+                  value: m.revenue,
+                }))}
+                valuePrefix="৳"
+                color="#f59e0b"
+              />
+
+              <BarChartComponent
+                title="Monthly Bookings"
+                description="Number of rental bookings created per month"
+                data={(analytics.charts.monthlyBookings || []).map((m) => ({
+                  label: m.month,
+                  value: m.bookings,
+                }))}
+                valueSuffix="Bookings"
+                barColor="#3b82f6"
+              />
+
+              <DonutChartComponent
+                title="Equipment by Category"
+                description="Total listed equipment categorized by type"
+                data={(analytics.charts.categoryDistribution || []).map((c) => ({
+                  label: c.category || "Other",
+                  value: c.count,
+                }))}
+              />
+
+              <BarChartComponent
+                title="Equipment Approval Status"
+                description="Breakdown of equipment by moderation status"
+                data={(analytics.charts.statusDistribution || []).map((s) => ({
+                  label: s.status || "Unknown",
+                  value: s.count,
+                }))}
+                valueSuffix="Items"
+                barColor="#10b981"
+              />
+            </div>
+          </section>
+        )}
+
+        {/* Challenge 3: Owner Visualizations */}
+        {role === "owner" && analytics?.charts && (
+          <section className="space-y-4">
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">
+                Rental Performance &amp; Earnings
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Track your rental income and bookings received for your equipment.
+              </p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <AreaChartComponent
+                title="Monthly Earnings"
+                description="Your earnings from completed paid rentals"
+                data={(analytics.charts.monthlyEarnings || []).map((m) => ({
+                  label: m.month,
+                  value: m.earnings,
+                }))}
+                valuePrefix="৳"
+                color="#10b981"
+              />
+
+              <BarChartComponent
+                title="Monthly Rental Bookings"
+                description="Total rental bookings received for your equipment"
+                data={(analytics.charts.monthlyRentals || []).map((m) => ({
+                  label: m.month,
+                  value: m.bookings,
+                }))}
+                valueSuffix="Rentals"
+                barColor="#f59e0b"
+              />
+
+              <div className="md:col-span-2 lg:max-w-xl">
+                <DonutChartComponent
+                  title="Equipment Approval Status"
+                  description="Review status of your equipment inventory"
+                  data={(analytics.charts.statusDistribution || []).map((s) => ({
+                    label: s.status || "Unknown",
+                    value: s.count,
+                  }))}
+                />
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Account Info and Activity */}
         <section className="grid gap-4 lg:grid-cols-3">
           <Card className="glass-card border-border/70 shadow-none lg:col-span-2">
             <CardHeader>
@@ -261,7 +485,7 @@ const Dashboard = async () => {
           </Card>
         </section>
       </main>
-    </SidebarInset>
+    </div>
   );
 };
 

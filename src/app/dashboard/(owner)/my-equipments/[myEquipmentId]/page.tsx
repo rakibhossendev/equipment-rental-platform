@@ -68,7 +68,7 @@ export default async function MyEquipmentDetails({
                 </p>
 
                 <Link
-                    href="/dashboard/owner/my-equipments"
+                    href="/dashboard/my-equipments"
                     className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
                 >
                     <ArrowLeft className="size-4" />
@@ -142,7 +142,7 @@ export default async function MyEquipmentDetails({
             {/* Top bar */}
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <Link
-                    href="/dashboard/owner/my-equipments"
+                    href="/dashboard/my-equipments"
                     className="inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-primary"
                 >
                     <ArrowLeft className="size-4" />

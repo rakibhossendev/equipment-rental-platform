@@ -5,8 +5,6 @@ import Link from "next/link";
 import {
     Search,
     Eye,
-    Pencil,
-    Trash2,
     Package,
     ImageOff,
 } from "lucide-react";
@@ -25,7 +23,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import DeleteEquipmentDialog from "../equipments/DeleteEquipmemtDialog";
+import DeleteOwnerEquipmentDialog from "./DeleteOwnerEquipmentDialog";
 import { useRouter } from "next/navigation";
 import EditMyEquipmentDialog from "./EditEquipmentModal";
 
@@ -262,7 +260,7 @@ export default function MyEquipmentsTable({
                                                 />
 
                                                 {/* Delete */}
-                                                <DeleteEquipmentDialog
+                                                <DeleteOwnerEquipmentDialog
                                                     equipmentId={equipment._id}
                                                     onDeleted={() => {
                                                         // Refresh equipment list

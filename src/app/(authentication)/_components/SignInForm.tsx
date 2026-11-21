@@ -47,8 +47,8 @@ export default function SignInForm({ isPending = false }: SignInFormProps) {
 
       toast.success("Signed in successfully!");
       router.push("/dashboard");
-    } catch (error) {
-      toast.error("unexpected error occurred");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -97,12 +97,6 @@ export default function SignInForm({ isPending = false }: SignInFormProps) {
           <Label htmlFor="password" className="text-sm font-semibold">
             Password
           </Label>
-          <Link
-            href="/forgot-password"
-            className="text-xs font-semibold text-brand underline-offset-4 hover:underline"
-          >
-            Forgot password?
-          </Link>
         </div>
 
         <div className="relative">

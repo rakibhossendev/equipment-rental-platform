@@ -23,7 +23,7 @@ import validatePassword from "@/lib/utils/verify-password";
 import { signIn, signUp } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { SignUpType, UserType } from "../../../../typescript/main";
+import { SignUpType } from "../../../../typescript/main";
 
 
 interface SignupFormProps {
@@ -58,8 +58,9 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
 
       // Save uploaded image URL in state
       setImageUrl(data.data.url);
-    } catch (error) {
+    } catch {
       setImageUrl(null);
+      toast.error("Image upload failed. Please try again.");
     } finally {
       setIsUploading(false);
     }

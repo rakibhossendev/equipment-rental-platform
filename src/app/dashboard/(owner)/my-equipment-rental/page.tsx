@@ -91,7 +91,7 @@ export default async function MyEquipmentRentalPage() {
         </p>
 
         <Link
-          href="/dashboard/owner"
+          href="/dashboard"
           className="mt-5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
         >
           Back to Dashboard

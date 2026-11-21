@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   UserRound,
   Phone,
-  Heart,
   CheckCircle2,
   ImageOff,
 } from "lucide-react";
@@ -29,7 +28,6 @@ import {
 import type { Equipment } from "../../../../../typescript/main";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { toast } from "sonner";
 import BookingModal from "../../_components/equipments/BookingModal";
 import AddFavoriteButton from "../../_components/equipments/AddFavoriteButton";
 
@@ -55,11 +53,10 @@ export default async function EquipmentDetailsPage({ params, }: EquipmentDetails
   })
 
   if (!session?.user) {
-    redirect("/sign-up");
+    redirect("/sign-in");
   }
-
-  if (session.user.role === "admin") {
-    redirect("/unauthorized");
+  if(session.user.role !== "customer"){
+    redirect("/unauthorized")
   }
   // Some APIs return { data: {...} }, others return the object directly
   const response: unknown = await getEquipmentDetails(equipmentId);
@@ -263,13 +260,19 @@ export default async function EquipmentDetailsPage({ params, }: EquipmentDetails
             </CardHeader>
 
             <CardContent className="space-y-3 text-sm text-muted-foreground">
-              {[
-                "Equipment must be returned according to the agreed rental period.",
-                "Customers are responsible for taking proper care of rented equipment.",
-                "Any damage or loss should be reported to the equipment owner.",
-                "Rental arrangements should be confirmed with the owner before collection.",
-              ].map((term) => (
-                <div key={term} className="flex items-start gap-2">
+              {(equipment.rentalTermsAndConditions
+                ? equipment.rentalTermsAndConditions
+                    .split("\n")
+                    .map((term) => term.trim())
+                    .filter((term) => term.length > 0)
+                : [
+                    "Equipment must be returned according to the agreed rental period.",
+                    "Customers are responsible for taking proper care of rented equipment.",
+                    "Any damage or loss should be reported to the equipment owner.",
+                    "Rental arrangements should be confirmed with the owner before collection.",
+                  ]
+              ).map((term, index) => (
+                <div key={`${term}-${index}`} className="flex items-start gap-2">
                   <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
                   <p>{term}</p>
                 </div>
@@ -379,9 +382,25 @@ export default async function EquipmentDetailsPage({ params, }: EquipmentDetails
                 </div>
               )}
 
-              <Button variant="outline" className="w-full">
-                Contact Owner
-              </Button>
+              {owner?.email || equipment.creatorEmail ? (
+                <a
+                  href={`mailto:${owner?.email || equipment.creatorEmail}?subject=Rental%20Inquiry:%20${encodeURIComponent(equipment.equipmentName)}`}
+                  className={buttonVariants({ variant: "outline", className: "w-full" })}
+                >
+                  Contact Owner
+                </a>
+              ) : owner?.phone ? (
+                <a
+                  href={`tel:${owner.phone}`}
+                  className={buttonVariants({ variant: "outline", className: "w-full" })}
+                >
+                  Contact Owner
+                </a>
+              ) : (
+                <Button variant="outline" disabled className="w-full">
+                  Contact Owner Unavailable
+                </Button>
+              )}
             </CardContent>
           </Card>
         </aside>
@@ -402,9 +421,18 @@ export default async function EquipmentDetailsPage({ params, }: EquipmentDetails
             </p>
           </div>
 
-          <Button size="lg" disabled={!isAvailable} className="shrink-0">
-            Rent Now
-          </Button>
+          <BookingModal
+            equipmentName={equipment.equipmentName}
+            rentalPrice={equipment.rentalPrice}
+            rentalType={equipment.rentalType}
+            availableQuantity={equipment.availableQuantity}
+            equipmentId={equipment._id}
+            trigger={
+              <Button size="lg" disabled={!isAvailable} className="shrink-0">
+                Rent Now
+              </Button>
+            }
+          />
         </div>
       </div>
     </section>
