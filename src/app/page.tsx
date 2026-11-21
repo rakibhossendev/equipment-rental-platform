@@ -6,6 +6,7 @@ import type { HomeData } from "../../typescript/main";
 
 import Navbar from "./(public)/_components/Navbar/Navbar";
 import Banner from "./(public)/_components/Banner/Banner";
+import Footer from "./(public)/_components/Footer/Footer";
 import HomeSection from "./(public)/_components/Home/Home";
 import FeaturedEquipment from "./(public)/_components/Home/FeaturedEquipment";
 import Categories from "./(public)/_components/Home/Categories";
@@ -46,6 +47,7 @@ export default async function Home() {
       <CustomerReviews />
       <HowItWorks />
       <PlatformStats stats={homeData?.stats ?? null} />
+      <Footer />
     </>
   );
 }

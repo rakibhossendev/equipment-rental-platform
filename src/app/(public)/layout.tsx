@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Navbar from "./_components/Navbar/Navbar";
+import Footer from "./_components/Footer/Footer";
 
 export const metadata: Metadata = {
     title: {
@@ -18,5 +19,6 @@ export default function PublicLayout({
     return <>
         <Navbar />
         {children}
+        <Footer />
     </>;
 }

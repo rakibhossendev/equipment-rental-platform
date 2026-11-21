@@ -17,9 +17,18 @@
 - ✅ **Challenge 2 ✅** — JWT + role middlewares functionally cover `verifyToken` / `verifyRenter` / `verifyOwner` / `verifyAdmin` and protect every private API by role (implementation names: `checkAuthenticateUser` + `verifyRole`)
 
 **Layout & Home**
-- ✅ Header/Navbar: Logo, Website Name, Home, All Equipment, About Us, Contact Us, How It Works, Login, Register, Dashboard (when logged in), Logout (when logged in) + mobile drawer with session-aware account menu
-- ✅ Banner/hero section (title + description + visual design)
+- ✅ Header/Navbar: Logo, Website Name, Home, All Equipment, Login, Register, Dashboard (when logged in), Logout (when logged in) + mobile drawer with session-aware account menu (About Us / Contact Us / How It Works are optional in the PDF and intentionally not linked — their pages don't exist, so no dead links)
+- ✅ Banner/hero section (title + description + visual design) with Framer Motion entrance
 - ✅ Public route group layout with shared metadata
+- ✅ Featured Equipment section (6 items from `GET /home-data` → `featuredEquipment`; unauthenticated "View Details" redirects to login)
+- ✅ Categories section — all 6 required categories with working `/equipments?category=…` filter links
+- ✅ Why Choose Us section (platform benefits)
+- ✅ Customer Reviews section — 4 reviews with customer name, rating, and comment (visible demo-data label)
+- ✅ ≥ 2 extra sections: How It Works (4-step guide) + Platform Stats (live stats with graceful fallback)
+- ✅ Framer Motion animations on Banner, Featured Equipment, and Categories (required) + reviews/extra sections (bonus) — 7 files use `framer-motion`, all respecting `useReducedMotion`
+- ✅ Site-wide Footer (brand + description, quick links, 6 category links, `© {year} EquipRent` bottom bar) rendered exactly once on the homepage and once via the `(public)` layout — no dead links (non-existent pages shown as plain text or omitted)
+- ✅ Homepage server-side data fetch from `GET /home-data` (fixed `/home` → `/home-data` URL bug) with API-down fallback so the page still renders
+- ✅ "Explore Equipment" CTA links to `/equipments` (fixed from `/all-equipments` 404)
 
 **Equipment browsing**
 - ✅ All Equipment page (public) with 3-column grid
@@ -71,20 +80,10 @@
 - ✅ Frontend config keys + MongoDB credentials secured via environment variables (.env not committed)
 - ✅ Design system (light/dark tokens, consistent typography, shadcn components, toasts)
 - ✅ TypeScript compiles clean (`tsc --noEmit` = 0 errors)
-- ✅ Client commits: **37/20** requirement met
-- ✅ Server commits: **14/12** requirement met
+- ✅ Client commits: **39/20** requirement met
+- ✅ Server commits: **15/12** requirement met
 
 # Incomplete Task ❌
-
-**Home page**
-- ❌ Featured Equipment section (6 approved items via MongoDB limit)
-- ❌ Categories section (the 6 required categories)
-- ❌ Why Choose Us / benefits section
-- ❌ Customer Reviews section (≥ 4 reviews with name, rating, comment)
-- ❌ At least 2 extra sections
-- ❌ Framer Motion animations (library installed, never imported)
-- ❌ Site-wide Footer
-- ❌ "Explore Equipment" button links to `/all-equipments` — wrong path, real route is `/equipments` (404)
 
 **Equipment details page (page exists, but broken in 3 ways)**
 - ❌ Role check allows **only `customer`**: Owners and Admins are redirected to `/unauthorized`; guests go to `/sign-up` instead of the Login page
@@ -109,8 +108,7 @@
 **Pages, links & quality**
 - ❌ Loading pages (`loading.tsx`) — none exist
 - ❌ Error pages (`error.tsx`) / 404 (`not-found.tsx`) — none exist (only `/unauthorized`)
-- ❌ About Us / Contact Us / How It Works pages (nav links → 404)
-- ❌ Dead links: /terms, /privacy, /forgot-password
+- ❌ Dead links: /terms, /privacy (sign-in & sign-up footers), /forgot-password (sign-in form)
 - ❌ Success page "Go to Dashboard" links to `/dashboard/customer` — that path does not exist (404; real routes are `/dashboard/my-rentals`, `/dashboard/favorites`)
 - ❌ Stripe `cancel_url` points to `/cancel` — no cancel page exists (404)
 
@@ -132,10 +130,10 @@
 
 | | Count | Percent |
 |---|---|---|
-| ✅ Complete | 54 | **61%** |
-| ❌ Incomplete | 34 | **39%** |
-| **Total tracked requirements** | **88** | **100%** |
+| ✅ Complete | 62 | **71%** |
+| ❌ Incomplete | 25 | **29%** |
+| **Total tracked requirements** | **87** | **100%** |
 
-- **Core requirements** (excluding the 4 optional bonus items): **54/84 = 64% complete**, 36% incomplete
+- **Core requirements** (excluding the 4 optional bonus items): **62/83 = 75% complete**, 25% incomplete
 - **Optional bonus:** 0/4 complete (0%)
-- **Notable since last update:** Stripe booking flow (modal → checkout → webhook → success), Favorites, My Rentals, customer dashboard group, and both commit requirements (client 37/20, server 14/12) are now done — plus Challenge 2 (JWT + role middlewares) fully applied. **Biggest remaining gaps: Home page sections/footer, equipment Update/Delete + Status field, owner My Equipment Rental + admin All Rentals, dashboard stats/charts (Challenge 3), loading/error pages, README/deployment polish.**
+- **Notable since last update:** The entire Home page is now done — Featured Equipment (API-driven), Categories, Why Choose Us, Customer Reviews (4 demo reviews, labeled), How It Works + Platform Stats extra sections, Framer Motion animations, the site-wide Footer, and the fixed `/equipments` CTA. Dead navbar links removed (About/Contact/How It Works are PDF-optional), footer added with zero broken links, `get-home-data` URL bug fixed, commits now client 39/20 and server 15/12. **Biggest remaining gaps: equipment Update/Delete + Status field, details-page role check/hardcoded terms, owner My Equipment Rental + admin All Rentals, dashboard stats/charts (Challenge 3), loading/error/404 pages, README/deployment polish.**
