@@ -8,6 +8,7 @@ import {
   MapPin,
   Phone,
   FileText,
+  LoaderCircle,
 } from "lucide-react";
 
 import {
@@ -34,28 +35,38 @@ interface BookingModalProps {
   trigger?: ReactNode;
 }
 
-export default function BookingModal({ equipmentId, equipmentName, rentalPrice, rentalType, availableQuantity, trigger, }: BookingModalProps) {
+export default function BookingModal({
+  equipmentId,
+  equipmentName,
+  rentalPrice,
+  rentalType,
+  availableQuantity,
+  trigger,
+}: BookingModalProps) {
   const { data: session } = useSession();
-  const [ open, setOpen ] = useState(false);
-  const [ quantity, setQuantity ] = useState("1");
-  const [ startDate, setStartDate ] = useState("");
-  const [ endDate, setEndDate ] = useState("");
 
-
+  const [open, setOpen] = useState(false);
+  const [quantity, setQuantity] = useState("1");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const getRentalDuration = () => {
     if (!startDate || !endDate) return 0;
 
     const start = new Date(`${startDate}T00:00:00`);
     const end = new Date(`${endDate}T00:00:00`);
+
     const difference = end.getTime() - start.getTime();
 
     if (difference < 0) return 0;
+
     const days = Math.floor(difference / (1000 * 60 * 60 * 24));
 
     if (rentalType === "Daily") return days + 1;
     if (rentalType === "Weekly") return Math.ceil((days + 1) / 7);
     if (rentalType === "Monthly") return Math.ceil((days + 1) / 30);
+
     return 0;
   };
 
@@ -63,28 +74,41 @@ export default function BookingModal({ equipmentId, equipmentName, rentalPrice, 
 
   const totalPrice = rentalPrice * duration * Number(quantity || 1);
 
-  const handleSubmitPayment = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmitPayment = async (
+    event: FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
 
-    const result = await createStripePayment({
-      equipmentId: equipmentId,
-      userEmail: session?.user.email,
-      startDate,
-      endDate,
-      quantity: Number(quantity),
-    });
+    if (isLoading) return;
 
-    window.location.href = result.checkoutUrl;
-  }
+    setIsLoading(true);
+
+    try {
+      const result = await createStripePayment({
+        equipmentId,
+        userEmail: session?.user.email,
+        startDate,
+        endDate,
+        quantity: Number(quantity),
+      });
+
+      window.location.href = result.checkoutUrl;
+    } catch (error) {
+      console.error("Payment initialization error:", error);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
       {/* Trigger Button */}
-      <div onClick={() => {
-        if (availableQuantity > 0) {
-          setOpen(true);
-        }
-      }}>
+      <div
+        onClick={() => {
+          if (availableQuantity > 0) {
+            setOpen(true);
+          }
+        }}
+      >
         {trigger}
       </div>
 
@@ -150,13 +174,16 @@ export default function BookingModal({ equipmentId, equipmentName, rentalPrice, 
                   <Label htmlFor="startDate">
                     Rental Start Date
                   </Label>
+
                   <Input
                     id="startDate"
                     name="startDate"
                     type="date"
-                    min={new Date().toISOString().split("T")[ 0 ]}
+                    min={new Date().toISOString().split("T")[0]}
                     value={startDate}
-                    onChange={(event) => setStartDate(event.target.value)}
+                    onChange={(event) =>
+                      setStartDate(event.target.value)
+                    }
                     required
                   />
                 </div>
@@ -165,13 +192,16 @@ export default function BookingModal({ equipmentId, equipmentName, rentalPrice, 
                   <Label htmlFor="endDate">
                     Rental End Date
                   </Label>
+
                   <Input
                     id="endDate"
                     name="endDate"
                     type="date"
                     min={startDate || undefined}
                     value={endDate}
-                    onChange={(event) => setEndDate(event.target.value)}
+                    onChange={(event) =>
+                      setEndDate(event.target.value)
+                    }
                     required
                   />
                 </div>
@@ -183,6 +213,7 @@ export default function BookingModal({ equipmentId, equipmentName, rentalPrice, 
               <Label htmlFor="quantity">
                 Required Quantity
               </Label>
+
               <Input
                 id="quantity"
                 name="quantity"
@@ -190,7 +221,9 @@ export default function BookingModal({ equipmentId, equipmentName, rentalPrice, 
                 min={1}
                 max={availableQuantity}
                 value={quantity}
-                onChange={(event) => setQuantity(event.target.value)}
+                onChange={(event) =>
+                  setQuantity(event.target.value)
+                }
                 required
               />
             </div>
@@ -261,12 +294,20 @@ export default function BookingModal({ equipmentId, equipmentName, rentalPrice, 
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
+                disabled={isLoading}
               >
                 Cancel
               </Button>
 
-              <Button type="submit">
-                Continue to Booking
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <LoaderCircle className="size-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  "Continue to Booking"
+                )}
               </Button>
             </div>
           </form>
