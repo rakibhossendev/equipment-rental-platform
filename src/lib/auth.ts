@@ -1,11 +1,8 @@
 import { env } from "@/config/env-config";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
 import { betterAuth } from "better-auth";
-import { jwt } from "better-auth/plugins"
-import { MongoClient } from "mongodb";
-
-const client = new MongoClient(env.MONGODB_DATABASE_URL as string);
-const db = client.db("equipment-rental-platform-db");
+import { jwt } from "better-auth/plugins";
+import { client, db } from "./mongodb";
 
 export const auth = betterAuth({
     database: mongodbAdapter(db, { client }),
@@ -35,4 +32,4 @@ export const auth = betterAuth({
             clientSecret: env.BETTER_AUTH_GOOGLE_CLIENT_SECRET as string,
         }
     }
-})
+});
