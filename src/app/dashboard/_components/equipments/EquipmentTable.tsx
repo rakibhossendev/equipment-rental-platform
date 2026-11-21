@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, Package, CalendarDays } from "lucide-react";
+import { Search, MapPin, Package, CalendarDays, Trash2, Pencil, Eye } from "lucide-react";
 import { toast } from "sonner";
 
 import type {
@@ -12,8 +12,9 @@ import type {
 } from "../../../../../typescript/main";
 
 import { updateEquipmentStatus } from "@/lib/action/equipment/updateEquipmentStatus";
+import DeleteEquipmentDialog from "./DeleteEquipmemtDialog";
 
-const STATUS_OPTIONS: EquipmentStatus[] = ["Pending", "Approved", "Rejected"];
+const STATUS_OPTIONS: EquipmentStatus[] = [ "Pending", "Approved", "Rejected" ];
 
 const STATUS_STYLES: Record<EquipmentStatus, string> = {
   Pending: "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-400",
@@ -23,7 +24,7 @@ const STATUS_STYLES: Record<EquipmentStatus, string> = {
 
 function EquipmentImage({ equipment }: { equipment: Equipment }) {
   const src = Array.isArray(equipment.equipmentImage)
-    ? equipment.equipmentImage[0]
+    ? equipment.equipmentImage[ 0 ]
     : equipment.equipmentImage;
 
   return (
@@ -53,7 +54,7 @@ function StatusControl({
   return (
     <div className="space-y-2">
       <span
-        className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[status]}`}
+        className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[ status ]}`}
       >
         {status}
       </span>
@@ -73,14 +74,14 @@ function StatusControl({
   );
 }
 
-export default function EquipmentTable({equipments,}: {equipments: Equipment[];}) {
+export default function EquipmentTable({ equipments, }: { equipments: Equipment[]; }) {
   const router = useRouter();
-  const [search, setSearch] = useState("");
-  
-  const [updated, setUpdated] = useState<Record<string, EquipmentStatus>>({});
+  const [ search, setSearch ] = useState("");
+
+  const [ updated, setUpdated ] = useState<Record<string, EquipmentStatus>>({});
 
   const getStatus = (item: Equipment): EquipmentStatus =>
-    updated[item._id] ?? item.status ?? "Pending";
+    updated[ item._id ] ?? item.status ?? "Pending";
 
   const query = search.toLowerCase();
   const filtered = equipments.filter((item) =>
@@ -96,16 +97,16 @@ export default function EquipmentTable({equipments,}: {equipments: Equipment[];}
 
   const handleStatusChange = async (id: string, status: EquipmentStatus) => {
     const item = equipments.find((entry) => entry._id === id);
-    const previous = updated[id] ?? item?.status ?? "Pending";
+    const previous = updated[ id ] ?? item?.status ?? "Pending";
 
     // Optimistic update: reflect the new status in the badge + dropdown immediately
-    setUpdated((prev) => ({ ...prev, [id]: status }));
+    setUpdated((prev) => ({ ...prev, [ id ]: status }));
 
     try {
       const result = await updateEquipmentStatus(id, status);
 
       if (!result?.success) {
-        setUpdated((prev) => ({ ...prev, [id]: previous }));
+        setUpdated((prev) => ({ ...prev, [ id ]: previous }));
         toast.error(result?.message || "Failed to update status");
         return;
       }
@@ -115,7 +116,7 @@ export default function EquipmentTable({equipments,}: {equipments: Equipment[];}
       router.refresh();
     } catch (error) {
       console.error("Status update error:", error);
-      setUpdated((prev) => ({ ...prev, [id]: previous }));
+      setUpdated((prev) => ({ ...prev, [ id ]: previous }));
       toast.error("Something went wrong!");
     }
   };
@@ -197,10 +198,32 @@ export default function EquipmentTable({equipments,}: {equipments: Equipment[];}
                 </div>
               </div>
 
-              <StatusControl
-                status={getStatus(equipment)}
-                onChange={(status) => handleStatusChange(equipment._id, status)}
-              />
+              <div className="flex items-center justify-between gap-2">
+                <StatusControl
+                  status={getStatus(equipment)}
+                  onChange={(status) => handleStatusChange(equipment._id, status)}
+                />
+
+                {/* Icon Actions */}
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    aria-label="Edit equipment"
+                    title="Edit"
+                    className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  >
+                    <Pencil className="size-4" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Delete equipment"
+                    title="Delete"
+                    className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
+              </div>
             </article>
           ))}
         </div>
@@ -210,8 +233,11 @@ export default function EquipmentTable({equipments,}: {equipments: Equipment[];}
           <table className="w-full table-fixed text-left text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/40 text-xs text-muted-foreground">
-                {["Equipment", "Owner", "Price", "Status"].map((heading) => (
-                  <th key={heading} className="px-3 py-4 first:pl-4">
+                {[ "Equipment", "Owner", "Price", "Status", "Actions" ].map((heading) => (
+                  <th
+                    key={heading}
+                    className="px-3 py-4 first:pl-4 last:pr-4 last:text-right"
+                  >
                     {heading}
                   </th>
                 ))}
@@ -258,6 +284,27 @@ export default function EquipmentTable({equipments,}: {equipments: Equipment[];}
                         handleStatusChange(equipment._id, status)
                       }
                     />
+                  </td>
+
+                  {/* Icon Actions Column */}
+                  <td className="px-3 py-3 pr-4 text-right">
+                    <div className="inline-flex items-center justify-end gap-1">
+                      <button
+                        type="button"
+                        aria-label="Edit equipment"
+                        title="Edit"
+                        className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      >
+                        <Pencil className="size-4" />
+                      </button>
+                      <DeleteEquipmentDialog
+                        equipmentId={equipment._id}
+                        onDeleted={() => {
+                          // Refresh equipment list
+                          router.refresh();
+                        }}
+                      />
+                    </div>
                   </td>
                 </tr>
               ))}
