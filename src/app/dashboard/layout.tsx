@@ -8,6 +8,10 @@ import {
 import DashboardSidebar from "./_components/Dashboard/dashboard-sidebar";
 import { requireRole } from "@/lib/core/server";
 
+// Session- and role-gated dashboards — rendered per request for the
+// signed-in user, never prerendered at build time.
+export const dynamic = "force-dynamic";
+
 export default async function DashboardLayout({
   children,
 }: {

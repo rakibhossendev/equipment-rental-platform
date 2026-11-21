@@ -15,6 +15,10 @@ import CustomerReviews from "./(public)/_components/Home/CustomerReviews";
 import HowItWorks from "./(public)/_components/Home/HowItWorks";
 import PlatformStats from "./(public)/_components/Home/PlatformStats";
 
+// Session-aware homepage (reads headers) — always rendered per request,
+// never prerendered at build time.
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   // Homepage data (GET /home-data). If the API fails, static
   // sections below still render; Featured/Stats show fallbacks.
