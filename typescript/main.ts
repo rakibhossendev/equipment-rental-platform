@@ -1,3 +1,17 @@
+// ============================================================
+// Central type definitions — Equipment Rental Platform
+//
+// All shared, reusable types and interfaces live in this file.
+// Import them via a relative path to this file, e.g.:
+//   import type { Equipment, UserType } from "../../../../typescript/main";
+//
+// Component-private types (React props, local UI state) stay in
+// their original files when they are not reusable elsewhere.
+// ============================================================
+
+// ------------------------------------------------------------
+// Shared union types (dropdowns & fixed states)
+// ------------------------------------------------------------
 
 // Union types for dropdowns and fixed states
 export type RentalType = 'Daily' | 'Weekly' | 'Monthly';
@@ -14,6 +28,10 @@ export type EquipmentCategory =
   | 'Event'
   | 'Tools'
   | 'Other';
+
+// ------------------------------------------------------------
+// Equipment
+// ------------------------------------------------------------
 
 // Nested interface for Owner Information
 export interface OwnerInfo {
@@ -46,6 +64,58 @@ export interface EquipmentDataType {
   createdAt?: string | Date;
   updatedAt?: string | Date;
 }
+
+// Equipment Types
+export type Equipment = {
+  _id: string;
+  id: string;
+  creatorEmail?: string;
+  equipmentName: string;
+  description?: string;
+  equipmentImage: string[] | string;
+  category: string;
+  rentalPrice: number;
+  rentalType: "Daily" | "Weekly" | "Monthly";
+  location: string;
+  availableQuantity: number;
+  equipmentCondition?: string;
+  brand?: string;
+  model?: string;
+  status?: EquipmentStatus;
+  createdAt?: string;
+  updatedAt?: string;
+  ownerInformation?: {
+    id?: string;
+    name?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+  };
+};
+
+// Query parameters for server-side search / filter / sorting
+// on the All Equipment page (moved from src/lib/action/equipment/getEquipment.ts)
+export type EquipmentFilterParams = {
+    search?: string;
+    category?: string;
+    rentalType?: "Daily" | "Weekly" | "Monthly";
+    minPrice?: number;
+    maxPrice?: number;
+    availability?: boolean;
+    sort?: "price-asc" | "price-desc" | "newest";
+    page?: number;
+    limit?: number;
+};
+
+// Standard `{ data: Equipment[] }` response returned by the
+// equipment list endpoints (public list, admin list, owner list)
+export interface EquipmentListResponse {
+    data: Equipment[];
+}
+
+// ------------------------------------------------------------
+// Users, auth & admin
+// ------------------------------------------------------------
 
 // User Data Type
 export type UserRole = "customer" | "admin" | "owner";
@@ -81,30 +151,37 @@ export interface UsersApiResponse {
   data: UserType[];
 }
 
-// Equipment Types
-export type Equipment = {
-  _id: string;
-  id: string;
-  creatorEmail?: string;
-  equipmentName: string;
-  description?: string;
-  equipmentImage: string[] | string;
-  category: string;
-  rentalPrice: number;
-  rentalType: "Daily" | "Weekly" | "Monthly";
-  location: string;
-  availableQuantity: number;
-  equipmentCondition?: string;
-  brand?: string;
-  model?: string;
-  status?: EquipmentStatus;
-  createdAt?: string;
-  updatedAt?: string;
-  ownerInformation?: {
-    id?: string;
-    name?: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-  };
-};
+// ------------------------------------------------------------
+// Profile
+// ------------------------------------------------------------
+
+// Request body for PATCH /users/profile
+// (moved from src/lib/action/users/update-profile.ts)
+export interface ProfileUpdateData {
+  name: string;
+  image: string;
+  phoneNumber: string;
+  address: string;
+}
+
+// ------------------------------------------------------------
+// Payments (Stripe)
+// (moved from src/lib/action/payment/stripePayment.ts)
+// ------------------------------------------------------------
+
+export interface CreatePaymentPayload {
+    equipmentId: string;
+    userEmail?: string;
+    startDate: string;
+    endDate: string;
+    quantity: number;
+}
+
+export interface CreatePaymentResponse {
+    checkoutUrl: string;
+    bookingId: string;
+}
+
+export interface APIResponse {
+    data: CreatePaymentResponse;
+}

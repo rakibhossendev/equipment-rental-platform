@@ -1,11 +1,7 @@
 
 import { env } from "@/config/env-config";
-import type { Equipment } from "../../../../typescript/main";
+import type { Equipment, EquipmentListResponse } from "../../../../typescript/main";
 import { getJWTTokenServer } from "@/lib/jwt/getJwtTokenServer";
-
-interface MyEquipmentsResponse {
-    data: Equipment[];
-}
 
 export async function myEquipments(): Promise<Equipment[]> {
     const token = await getJWTTokenServer();
@@ -22,7 +18,7 @@ export async function myEquipments(): Promise<Equipment[]> {
         throw new Error("Failed to fetch my equipments");
     }
 
-    const result: MyEquipmentsResponse = await response.json();
+    const result: EquipmentListResponse = await response.json();
 
     return result.data;
 }

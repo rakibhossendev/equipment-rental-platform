@@ -30,9 +30,10 @@ import type { Equipment } from "../../../../../typescript/main";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { toast } from "sonner";
+import BookingModal from "../../_components/equipments/BookingModal";
 
 
-interface EquipmentDetailsPageProps {params: Promise<{equipmentId: string;}>;}
+interface EquipmentDetailsPageProps { params: Promise<{ equipmentId: string; }>; }
 
 // Status badge colors
 function getStatusClass(status?: string) {
@@ -46,18 +47,17 @@ function getStatusClass(status?: string) {
   }
 }
 
-export default async function EquipmentDetailsPage({params,}: EquipmentDetailsPageProps) {
+export default async function EquipmentDetailsPage({ params, }: EquipmentDetailsPageProps) {
   const { equipmentId } = await params;
   const session = await auth.api.getSession({
     headers: await headers(),
   })
 
-  if(!session?.user){
+  if (!session?.user) {
     redirect("/sign-up");
   }
-  const ROLES = ["admin","customer"];
-  console.log(session.user)
-  if(ROLES.includes(session.user.role)){
+
+  if (session.user.role !== "customer") {
     redirect("/unauthorized");
   }
   // Some APIs return { data: {...} }, others return the object directly
@@ -73,9 +73,9 @@ export default async function EquipmentDetailsPage({params,}: EquipmentDetailsPa
   }
 
   // Images (string or string[]): keep only valid urls
-  const images = (Array.isArray(equipment.equipmentImage)? equipment.equipmentImage: [equipment.equipmentImage]).filter((image): image is string =>typeof image === "string" && image.trim().length > 0);
+  const images = (Array.isArray(equipment.equipmentImage) ? equipment.equipmentImage : [ equipment.equipmentImage ]).filter((image): image is string => typeof image === "string" && image.trim().length > 0);
 
-  const mainImage = images[0];
+  const mainImage = images[ 0 ];
   const extraImages = images.slice(1, 5);
 
   // Safe numbers (never crash if a field is missing)
@@ -309,10 +309,22 @@ export default async function EquipmentDetailsPage({params,}: EquipmentDetailsPa
               </div>
 
               <div className="space-y-3">
-                <Button className="w-full" size="lg" disabled={!isAvailable}>
-                  Rent This Equipment
-                </Button>
-
+                <BookingModal
+                  equipmentName={equipment.equipmentName}
+                  rentalPrice={equipment.rentalPrice}
+                  rentalType={equipment.rentalType}
+                  availableQuantity={equipment.availableQuantity}
+                  equipmentId={equipment._id}
+                  trigger={
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      disabled={!isAvailable}
+                    >
+                      Rent This Equipment
+                    </Button>
+                  }
+                />
                 <Button variant="outline" className="w-full" size="lg">
                   <Heart className="size-4" />
                   Add to Favorites
@@ -402,15 +414,7 @@ export default async function EquipmentDetailsPage({params,}: EquipmentDetailsPa
 }
 
 // Reusable information item
-function InformationItem({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
+function InformationItem({ icon, label, value, }: { icon: React.ReactNode; label: string; value: string; }) {
   return (
     <div className="flex items-start gap-3">
       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-muted-foreground [&_svg]:size-4">

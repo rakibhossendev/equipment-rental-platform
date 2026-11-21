@@ -1,15 +1,8 @@
 "use server";
 
 import { env } from "@/config/env-config";
-import type { UserType } from "../../../../typescript/main";
+import type { ProfileUpdateData, UserType } from "../../../../typescript/main";
 import { getJWTTokenServer } from "@/lib/jwt/getJwtTokenServer";
-
-interface ProfileUpdateData {
-  name: string;
-  image: string;
-  phoneNumber: string;
-  address: string;
-}
 
 export async function updateProfile(data: ProfileUpdateData) {
   const token = await getJWTTokenServer();

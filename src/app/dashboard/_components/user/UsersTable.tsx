@@ -23,12 +23,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { UserType } from "../../../../../typescript/main";
+import type { UserRole, UserType } from "../../../../../typescript/main";
 import UsersSearch from "./UserSearch";
 import { updateUserRole } from "@/lib/action/users/updateUserRole";
 import { toast } from "sonner";
-
-type UserRole = "customer" | "owner" | "admin";
 
 interface UsersTableProps {
   users: UserType[];
