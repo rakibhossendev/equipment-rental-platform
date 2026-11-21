@@ -33,7 +33,7 @@ function getMongoClient(): { client: MongoClient; clientPromise: Promise<MongoCl
     };
   }
 
-  const clientInstance = new MongoClient(uri, options);
+  const clientInstance = new MongoClient(uri as string, options);
   const promise = clientInstance.connect().catch((error) => {
     // If the initial connection fails, clear cached instances
     // so subsequent calls can attempt a fresh connection
