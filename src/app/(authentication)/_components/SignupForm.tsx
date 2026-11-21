@@ -32,12 +32,9 @@ interface SignupFormProps {
 
 export default function SignupForm({ isPending = false, }: SignupFormProps) {
   const router = useRouter();
-  const [ loading, setLoading ] = useState(false);
   const [ preview, setPreview ] = useState<string | null>(null);
   const [ isUploading, setIsUploading ] = useState(false);
   const [ imageUrl, setImageUrl ] = useState<string | null>(null);
-
-  const pendingState = isPending || loading || isUploading;
 
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[ 0 ];
@@ -83,11 +80,10 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
     router.push("/dashboard");
     router.refresh();
   };
-
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (pendingState) return;
+    if (isUploading) return;
 
     const formData = new FormData(event.currentTarget);
 
@@ -97,29 +93,20 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
     const isValidPassword = validatePassword(getUserData.password, getUserData.confirmPassword);
 
     if (isValidPassword) {
-      try {
-        setLoading(true);
-        const { error } = await signUp.email({
-          name: getUserData.name,
-          email: getUserData.email,
-          password: getUserData.password,
-          image: getUserData.profileImageUrl,
-          callbackURL: "/dashboard"
-        });
+      const { error } = await signUp.email({
+        name: getUserData.name,
+        email: getUserData.email,
+        password: getUserData.password,
+        image: getUserData.profileImageUrl,
+        callbackURL: "/dashboard"
+      })
 
-        if (error) {
-          toast.error(error.message || "Failed to create account");
-          return;
-        }
-
-        toast.success("Account created successfully!");
-        router.push("/dashboard");
-        router.refresh();
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : "An unexpected error occurred during signup");
-      } finally {
-        setLoading(false);
+      if (error) {
+        toast.error(error.message);
+        return
       }
+      toast.success("Account created successfully!");
+      router.push("/dashboard")
     }
   }
 
@@ -298,10 +285,10 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
       {/* Submit */}
       <Button
         type="submit"
-        disabled={pendingState}
+        disabled={isPending}
         className="group h-12 w-full cursor-pointer rounded-xl bg-brand text-sm font-semibold text-brand-foreground shadow-lg shadow-brand/15 transition-all hover:brightness-95 active:scale-[0.99]"
       >
-        {pendingState ? (
+        {isPending ? (
           <>
             <Loader2 className="size-4 animate-spin" />
             Creating account...
@@ -358,6 +345,8 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
         </svg>
         Continue with Google
       </Button>
+
+
     </form>
   );
 }

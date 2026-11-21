@@ -55,8 +55,8 @@ export default async function EquipmentDetailsPage({ params, }: EquipmentDetails
   if (!session?.user) {
     redirect("/sign-in");
   }
-  if (![ "customer", "owner", "admin" ].includes(session.user.role)) {
-    redirect("/unauthorized");
+  if(session.user.role !== "customer"){
+    redirect("/unauthorized")
   }
   // Some APIs return { data: {...} }, others return the object directly
   const response: unknown = await getEquipmentDetails(equipmentId);
