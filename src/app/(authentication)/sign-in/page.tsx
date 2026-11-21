@@ -9,9 +9,7 @@ import {
 } from "lucide-react";
 import SignInForm from "../_components/SignInForm";
 import Navbar from "@/app/(public)/_components/Navbar/Navbar";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+
 
 const benefits = [
   "Access your rental dashboard anytime",
@@ -20,13 +18,6 @@ const benefits = [
 ];
 
 export default async function SignInPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (session?.user) {
-    redirect("/dashboard");
-  }
 
   return (
     <>
