@@ -197,3 +197,14 @@ export type RentalBooking = {
   paymentStatus: "Pending" | "Paid" | "Failed";
   bookingStatus: "Pending" | "Confirmed" | "Cancelled";
 };
+
+export type FavoriteEquipment = {
+  _id: string;
+  equipmentId: string;
+  userId: string;
+  userEmail: string;
+  equipmentName: string;
+  category: string;
+  equipmentImage: string | string[];
+  createdAt: string;
+};
