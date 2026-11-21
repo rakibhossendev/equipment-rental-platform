@@ -1,4 +1,6 @@
 
+"use client";
+
 import Link from "next/link";
 import { ArrowLeft, Home, SearchX } from "lucide-react";
 
@@ -23,7 +25,7 @@ export default function NotFound() {
         </h2>
 
         <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-muted-foreground sm:text-base">
-          The page you're looking for might have been removed, had its name
+          The page you&apos;re looking for might have been removed, had its name
           changed, or is temporarily unavailable.
         </p>
 

@@ -84,7 +84,7 @@ const SuccessPage = () => {
           {/* Actions */}
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Link
-              href="/dashboard/customer"
+              href="/dashboard/my-rentals"
               className={buttonVariants({
                 size: "lg",
                 className: "w-full sm:w-auto",

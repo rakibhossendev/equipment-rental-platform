@@ -25,7 +25,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createStripePayment } from "@/lib/action/payment/stripePayment";
 import { useSession } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
 
 interface BookingModalProps {
   equipmentId: string;

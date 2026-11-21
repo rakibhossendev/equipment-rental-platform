@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, Package, CalendarDays, Trash2, Pencil, Eye } from "lucide-react";
+import { Search, MapPin, Package, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 
 import type {
