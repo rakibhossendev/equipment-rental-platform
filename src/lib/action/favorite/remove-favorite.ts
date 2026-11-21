@@ -2,7 +2,7 @@
 
 import { env } from "@/config/env-config";
 import { getJWTTokenServer } from "@/lib/jwt/getJwtTokenServer";
-import { getJWTTokenClient } from "@/lib/jwt/getTokenClient";
+
 
 
 export async function removeFavorite(favoriteId: string) {
