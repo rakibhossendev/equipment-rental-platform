@@ -2,6 +2,7 @@
 
 import { env } from "@/config/env-config";
 import { Equipment, EquipmentListResponse } from "../../../../typescript/main";
+import { getJWTTokenServer } from "@/lib/jwt/getJwtTokenServer";
 
 export async function getAllEquipment(query = ""): Promise<EquipmentListResponse> {
 
@@ -18,9 +19,12 @@ export async function getAllEquipment(query = ""): Promise<EquipmentListResponse
 
 
 export async function getAllEquipmentForAdmin(): Promise<EquipmentListResponse> {
-
+    const token = await getJWTTokenServer()
     const response = await fetch(`${env.NEXT_PUBLIC_API_BASE_URL}/equipments/all-equipments`, {
         cache: "no-store",
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
     });
 
     if (!response.ok) {
@@ -32,10 +36,14 @@ export async function getAllEquipmentForAdmin(): Promise<EquipmentListResponse> 
 
 
 export async function getEquipmentDetails(id: string): Promise<Equipment> {
-    const response = await fetch(`${env.NEXT_PUBLIC_API_BASE_URL}/equipments/${id}`,
-        {
-            cache: "no-store",
+    const token = await getJWTTokenServer();
+    const response = await fetch(`${env.NEXT_PUBLIC_API_BASE_URL}/equipments/${id}`, {
+        cache: "no-store",
+        headers: {
+            Authorization: `Bearer ${token}`
         }
+    },
+
     );
 
     if (!response.ok) {
@@ -43,6 +51,6 @@ export async function getEquipmentDetails(id: string): Promise<Equipment> {
     }
 
     const result: Equipment = await response.json();
-    
+
     return result;
 }

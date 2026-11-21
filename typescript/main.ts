@@ -185,3 +185,15 @@ export interface CreatePaymentResponse {
 export interface APIResponse {
     data: CreatePaymentResponse;
 }
+
+// Rental booking type
+export type RentalBooking = {
+  _id: string;
+  equipmentName: string;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+  totalPay: number;
+  paymentStatus: "Pending" | "Paid" | "Failed";
+  bookingStatus: "Pending" | "Confirmed" | "Cancelled";
+};
