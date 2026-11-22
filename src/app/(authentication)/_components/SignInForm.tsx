@@ -64,8 +64,8 @@ export default function SignInForm({ isPending = false }: SignInFormProps) {
       toast.error(data.error.message);
       return;
     }
-    router.replace("/dashboard");
-    router.refresh();
+    toast.success("Signed in successfully!");
+    window.location.replace("/equipments");
   };
 
   const pendingState = isPending || loading;

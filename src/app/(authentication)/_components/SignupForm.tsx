@@ -73,11 +73,12 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
       callbackURL: "/dashboard"
     });
 
-    if(data.error) {
+    if (data.error) {
       toast.error(data.error.message);
       return;
     }
-    router.replace("/dashboard");
+    // router.replace("/dashboard");
+    window.location.replace("/equipments");
   };
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -104,8 +105,8 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
         toast.error(error.message);
         return
       }
-      toast.success("Account created successfully!");
-      router.replace("/dashboard")
+      toast.success("Signed in successfully!");
+      window.location.replace("/equipments");
     }
   }
 
