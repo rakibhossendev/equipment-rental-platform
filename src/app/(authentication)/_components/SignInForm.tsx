@@ -37,7 +37,7 @@ export default function SignInForm({ isPending = false }: SignInFormProps) {
       const { error } = await signIn.email({
         email: email,
         password: password,
-        callbackURL: "/equipments",
+        callbackURL: "/dashboard",
       });
 
       if (error) {
@@ -46,7 +46,7 @@ export default function SignInForm({ isPending = false }: SignInFormProps) {
       }
 
       toast.success("Signed in successfully!");
-      router.push("/equipments");
+      router.push("/dashboard");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "An unexpected error occurred");
     } finally {
@@ -57,14 +57,14 @@ export default function SignInForm({ isPending = false }: SignInFormProps) {
   const handleGoogleSignin = async () => {
     const data = await signIn.social({
       provider: "google",
-      callbackURL: "/equipments"
+      callbackURL: "/dashboard"
     });
 
     if (data.error) {
       toast.error(data.error.message);
       return;
     }
-    router.push("/equipments");
+    router.replace("/dashboard");
     router.refresh();
   };
 

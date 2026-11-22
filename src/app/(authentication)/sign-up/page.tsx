@@ -10,9 +10,7 @@ import {
 } from "lucide-react";
 import SignupForm from "../_components/SignupForm";
 import Navbar from "@/app/(public)/_components/Navbar/Navbar";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
+
 
 
 const benefits = [
