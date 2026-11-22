@@ -22,7 +22,7 @@ const benefits = [
 ];
 
 export default async function SignUpPage() {
-
+  
 
   return (
     <>

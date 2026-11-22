@@ -70,14 +70,14 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
   const handleGoogleSignin = async () => {
     const data = await signIn.social({
       provider: "google",
-      callbackURL: "/dashboard"
+      callbackURL: "/equipments"
     });
 
     if(data.error) {
       toast.error(data.error.message);
       return;
     }
-    router.push("/dashboard");
+    router.push("/equipments");
   };
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -97,7 +97,7 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
         email: getUserData.email,
         password: getUserData.password,
         image: getUserData.profileImageUrl,
-        callbackURL: "/dashboard"
+        callbackURL: "/equipments"
       })
 
       if (error) {
@@ -105,7 +105,7 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
         return
       }
       toast.success("Account created successfully!");
-      router.push("/dashboard")
+      router.push("/equipments")
     }
   }
 
