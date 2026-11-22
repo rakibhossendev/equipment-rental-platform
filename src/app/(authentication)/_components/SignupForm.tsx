@@ -77,8 +77,8 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
       toast.error(data.error.message);
       return;
     }
-    // router.replace("/dashboard");
-    window.location.replace("/equipments");
+    router.replace("/dashboard");
+    // window.location.replace("/equipments");
   };
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
