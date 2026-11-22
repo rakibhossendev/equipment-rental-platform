@@ -78,7 +78,7 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
       return;
     }
     // router.replace("/dashboard");
-    window.location.replace("/equipments");
+    window.location.replace("/dashboard");
   };
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -106,7 +106,7 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
         return
       }
       toast.success("Signed in successfully!");
-      window.location.replace("/equipments");
+      window.location.replace("/dashboard");
     }
   }
 

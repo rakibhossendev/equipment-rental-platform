@@ -46,7 +46,7 @@ export default function SignInForm({ isPending = false }: SignInFormProps) {
       }
 
       toast.success("Signed in successfully!");
-      router.push("/dashboard");
+      window.location.replace("/dashboard");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "An unexpected error occurred");
     } finally {
@@ -65,7 +65,7 @@ export default function SignInForm({ isPending = false }: SignInFormProps) {
       return;
     }
     toast.success("Signed in successfully!");
-    window.location.replace("/equipments");
+    window.location.replace("/dashboard");
   };
 
   const pendingState = isPending || loading;

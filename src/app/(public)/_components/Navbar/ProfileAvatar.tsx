@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { LayoutDashboard, UserRound, LogOut, Loader2 } from "lucide-react";
+import { LayoutDashboard, UserRound, LogOut, Loader2, ToolCaseIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { authClient } from "@/lib/auth-client";
@@ -30,13 +30,14 @@ const getInitials = (name?: string | null) =>
     .trim()
     .split(/\s+/)
     .slice(0, 2)
-    .map((part) => part[0] ?? "")
+    .map((part) => part[ 0 ] ?? "")
     .join("")
     .toUpperCase() || "U";
 
 const links = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Edit profile", href: "/dashboard/profile", icon: UserRound },
+  { label: "All Equipments", href: "/equipments", icon: ToolCaseIcon },
+  { label: "Edit profile", href: "/dashboard/profile", icon: UserRound }
 ];
 
 export default function ProfileAvatar({
@@ -45,7 +46,7 @@ export default function ProfileAvatar({
   className = "",
 }: ProfileAvatarProps) {
   const router = useRouter();
-  const [isSigningOut, setIsSigningOut] = useState(false);
+  const [ isSigningOut, setIsSigningOut ] = useState(false);
 
   const displayName = user.name?.trim() || "User";
 
