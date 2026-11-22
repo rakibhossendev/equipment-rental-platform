@@ -70,7 +70,7 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
   const handleGoogleSignin = async () => {
     const data = await signIn.social({
       provider: "google",
-      callbackURL: "/dashboard"
+      callbackURL: "/equipments"
     });
 
     if (data.error) {
@@ -78,7 +78,7 @@ export default function SignupForm({ isPending = false, }: SignupFormProps) {
       return;
     }
     // router.replace("/dashboard");
-    window.location.replace("/dashboard");
+    window.location.replace("/equipments");
   };
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
